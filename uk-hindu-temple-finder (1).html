@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>UK Hindu Temple Finder</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ivory:#F4EFE6; --paper:#FFFFFF; --line:#E6DECF; --line2:#EFE8DB;
+  --ink:#241C17; --ink2:#6B5D50; --ink3:#8C7E70;
+  --saffron:#E39A2B; --vermilion:#C2362B; --teal:#0F6E6A; --indigo:#2E4A6B;
+  --brass:#C29A2B; --burnt:#C56A2A;
+  --shadow:0 1px 2px rgba(60,40,20,.06),0 8px 24px rgba(60,40,20,.06);
+  --serif:"Fraunces","Hoefler Text","Iowan Old Style",Palatino,Georgia,serif;
+  --sans:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{font-family:var(--sans);color:var(--ink);background:var(--ivory);-webkit-font-smoothing:antialiased;overflow:hidden}
+button{font-family:inherit;cursor:pointer}
+a{color:var(--teal)}
+
+/* ---- layout ---- */
+.app{display:grid;grid-template-columns:360px 1fr;grid-template-rows:1fr;height:100vh}
+@media (max-width:880px){
+  .app{grid-template-columns:1fr;grid-template-rows:auto 46vh 1fr;overflow:auto}
+}
+
+/* ---- panel ---- */
+.panel{background:var(--paper);border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
+@media (max-width:880px){.panel{border-right:none;border-bottom:1px solid var(--line)}}
+.head{padding:18px 18px 14px;border-bottom:1px solid var(--line2);position:relative}
+.head::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:3px;
+  background:linear-gradient(90deg,var(--saffron),var(--vermilion) 60%,var(--brass))}
+.kicker{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--vermilion);margin:0 0 6px}
+.title{font-family:var(--serif);font-weight:600;font-size:26px;line-height:1.05;margin:0;letter-spacing:-.01em}
+.title small{display:block;font-family:var(--sans);font-weight:400;font-size:12.5px;color:var(--ink2);letter-spacing:0;margin-top:6px;line-height:1.4}
+
+/* ---- search ---- */
+.controls{padding:14px 18px;display:flex;flex-direction:column;gap:10px;border-bottom:1px solid var(--line2)}
+.pc-row{display:flex;gap:8px}
+.field{flex:1;display:flex;align-items:center;gap:8px;background:var(--ivory);border:1px solid var(--line);border-radius:10px;padding:0 10px}
+.field:focus-within{border-color:var(--saffron);box-shadow:0 0 0 3px rgba(227,154,43,.16)}
+.field input{border:0;background:transparent;outline:0;padding:11px 0;font-size:15px;width:100%;color:var(--ink);font-family:var(--mono);letter-spacing:.03em}
+.field input::placeholder{font-family:var(--sans);letter-spacing:0;color:var(--ink3)}
+.btn{border:1px solid transparent;border-radius:10px;padding:0 14px;font-weight:600;font-size:14px;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn-go{background:var(--vermilion);color:#fff}
+.btn-go:hover{background:#a92c22}
+.btn-ghost{background:var(--ivory);color:var(--ink);border-color:var(--line)}
+.btn-ghost:hover{border-color:var(--ink3)}
+.mini{display:flex;gap:8px;flex-wrap:wrap}
+.mini .btn{padding:7px 11px;font-size:12.5px;font-weight:500}
+.hint{font-size:12px;color:var(--ink2);min-height:16px;line-height:1.4}
+.hint b{color:var(--ink);font-weight:600}
+.hint .err{color:var(--vermilion)}
+
+.filters{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.filters .sel{grid-column:span 1}
+.sel label{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);margin:0 0 4px}
+select{width:100%;appearance:none;background:var(--paper);border:1px solid var(--line);border-radius:9px;padding:9px 28px 9px 10px;font-size:13.5px;color:var(--ink);font-family:var(--sans);
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M2 4l4 4 4-4' fill='none' stroke='%236B5D50' stroke-width='1.5'/></svg>");
+  background-repeat:no-repeat;background-position:right 9px center}
+select:focus{outline:0;border-color:var(--saffron);box-shadow:0 0 0 3px rgba(227,154,43,.16)}
+
+/* ---- results ---- */
+.results-head{padding:11px 18px 8px;display:flex;align-items:baseline;justify-content:space-between}
+.count{font-family:var(--mono);font-size:12px;color:var(--ink2)}
+.count b{color:var(--vermilion)}
+.clearall{background:none;border:0;color:var(--teal);font-size:12.5px;font-weight:600;padding:0}
+.clearall:hover{text-decoration:underline}
+.list{flex:1;overflow-y:auto;padding:0 12px 18px;min-height:0}
+@media (max-width:880px){.list{overflow:visible}}
+.card{position:relative;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:12px 13px 12px 15px;margin:6px 0;transition:border-color .15s,transform .06s;overflow:hidden}
+.card:hover{border-color:var(--saffron)}
+.card:active{transform:scale(.995)}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--dot,var(--teal))}
+.card.feat{border-color:var(--brass);background:linear-gradient(180deg,#fffaf0,#fff)}
+.card.feat::before{background:linear-gradient(180deg,var(--brass),var(--saffron))}
+.c-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.c-name{font-family:var(--serif);font-weight:600;font-size:16.5px;line-height:1.15;margin:0;letter-spacing:-.005em}
+.c-dist{font-family:var(--mono);font-size:12.5px;color:var(--vermilion);white-space:nowrap;font-weight:500;padding-top:2px}
+.c-loc{font-size:12.5px;color:var(--ink2);margin:3px 0 0}
+.c-addr{font-size:12px;color:var(--ink3);margin:5px 0 0;line-height:1.35}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;align-items:center}
+.chip{font-size:11px;font-weight:600;padding:3px 8px;border-radius:999px;display:inline-flex;align-items:center;gap:5px;background:var(--ivory);color:var(--ink2);border:1px solid var(--line)}
+.chip .swatch{width:8px;height:8px;border-radius:50%}
+.chip.feat{background:#fbf1dc;color:#8a6414;border-color:#e7cf9a}
+.c-note{font-size:12px;color:var(--ink2);margin:8px 0 0;line-height:1.4}
+.c-links{display:flex;gap:14px;margin-top:9px}
+.c-links a{font-size:12.5px;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:4px}
+.c-links a:hover{text-decoration:underline}
+.empty{padding:30px 18px;text-align:center;color:var(--ink2)}
+.empty .big{font-family:var(--serif);font-size:18px;color:var(--ink);margin-bottom:6px}
+
+/* ---- map ---- */
+.map-wrap{position:relative;min-height:0}
+#map{position:absolute;inset:0;background:var(--ivory)}
+.leaflet-container{font-family:var(--sans)}
+.legend{position:absolute;z-index:500;right:12px;bottom:22px;background:rgba(255,255,255,.94);backdrop-filter:blur(4px);border:1px solid var(--line);border-radius:11px;padding:10px 12px;box-shadow:var(--shadow);font-size:11.5px;max-width:180px}
+.legend h4{margin:0 0 7px;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);font-weight:500}
+.legend .row{display:flex;align-items:center;gap:7px;margin:4px 0;color:var(--ink2)}
+.legend .swatch{width:10px;height:10px;border-radius:50%;flex:none;box-shadow:0 0 0 2px #fff}
+.legend .swatch.ring{box-shadow:0 0 0 2px #fff,0 0 0 3.5px var(--brass)}
+@media (max-width:880px){.legend{bottom:12px;right:8px;padding:8px 10px}}
+.about-toggle{position:absolute;z-index:500;left:12px;bottom:22px;background:rgba(255,255,255,.94);border:1px solid var(--line);border-radius:999px;padding:7px 13px;font-size:12px;font-weight:600;color:var(--ink);box-shadow:var(--shadow)}
+@media (max-width:880px){.about-toggle{bottom:12px;left:8px}}
+
+/* markers */
+.tmarker{border-radius:50%;border:2px solid #fff;box-shadow:0 1px 4px rgba(40,25,10,.35)}
+.tmarker.feat{border-color:var(--brass);box-shadow:0 0 0 2px #fff,0 2px 6px rgba(40,25,10,.4)}
+.you-dot{border-radius:50%;background:var(--indigo);border:3px solid #fff;box-shadow:0 0 0 3px rgba(46,74,107,.3),0 2px 6px rgba(0,0,0,.3)}
+.you-pulse{animation:pulse 2s ease-out infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(46,74,107,.4)}70%{box-shadow:0 0 0 16px rgba(46,74,107,0)}100%{box-shadow:0 0 0 0 rgba(46,74,107,0)}}
+.leaflet-popup-content-wrapper{border-radius:12px;box-shadow:var(--shadow);border:1px solid var(--line)}
+.leaflet-popup-content{margin:12px 14px;font-family:var(--sans)}
+.pop-name{font-family:var(--serif);font-weight:600;font-size:16px;line-height:1.15;margin:0 0 3px}
+.pop-loc{font-size:12.5px;color:var(--ink2);margin:0 0 2px}
+.pop-addr{font-size:12px;color:var(--ink3);margin:4px 0 0;line-height:1.35}
+.pop-links{display:flex;gap:12px;margin-top:8px}
+.pop-links a{font-size:12.5px;font-weight:600;text-decoration:none}
+
+/* about modal */
+.modal{position:fixed;inset:0;z-index:1000;background:rgba(36,28,23,.4);display:none;align-items:center;justify-content:center;padding:20px}
+.modal.open{display:flex}
+.modal-card{background:var(--paper);border-radius:16px;max-width:560px;width:100%;max-height:82vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3);border:1px solid var(--line)}
+.modal-card .m-head{padding:18px 20px 12px;border-bottom:1px solid var(--line2);position:relative}
+.modal-card .m-head::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:3px;background:linear-gradient(90deg,var(--saffron),var(--vermilion) 60%,var(--brass))}
+.modal-card h3{font-family:var(--serif);font-weight:600;font-size:21px;margin:0}
+.modal-card .body{padding:16px 20px 20px;font-size:13.5px;line-height:1.55;color:var(--ink2)}
+.modal-card .body p{margin:0 0 11px}
+.modal-card .body b{color:var(--ink)}
+.modal-card .close{position:absolute;top:14px;right:16px;background:none;border:0;font-size:22px;color:var(--ink3);line-height:1}
+.modal-card ul{margin:0 0 11px;padding-left:18px}
+.modal-card li{margin:3px 0}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="panel">
+    <div class="head">
+      <p class="kicker">Sacred geography · United Kingdom</p>
+      <h1 class="title">Hindu Temple Finder<small>Find your nearest mandir by postcode, or browse every temple by region and tradition.</small></h1>
+    </div>
+
+    <div class="controls">
+      <div class="pc-row">
+        <div class="field">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-6.4-7-11a7 7 0 1114 0c0 4.6-7 11-7 11z" stroke="%23C2362B" stroke-width="1.6"/><circle cx="12" cy="10" r="2.4" stroke="%23C2362B" stroke-width="1.6"/></svg>
+          <input id="pc" type="text" placeholder="Enter a postcode (e.g. LE1 6EJ)" autocomplete="off" spellcheck="false"/>
+        </div>
+        <button class="btn btn-go" id="go">Find</button>
+      </div>
+      <div class="mini">
+        <button class="btn btn-ghost" id="geo">◎ Use my location</button>
+        <button class="btn btn-ghost" id="pin">✛ Drop a pin on the map</button>
+      </div>
+      <div class="hint" id="hint">Nearest temples are ranked by straight-line distance from your postcode.</div>
+
+      <div class="filters">
+        <div class="sel"><label>Region</label>
+          <select id="fRegion"><option value="">All regions</option></select></div>
+        <div class="sel"><label>County / borough</label>
+          <select id="fCounty"><option value="">All counties</option></select></div>
+        <div class="sel"><label>Tradition</label>
+          <select id="fTrad"><option value="">All traditions</option></select></div>
+        <div class="sel"><label>Search by name</label>
+          <select style="display:none"></select>
+          <div class="field" style="padding:0 8px"><input id="fName" type="text" placeholder="Temple name…" autocomplete="off" style="font-family:var(--sans);letter-spacing:0;padding:8px 0;font-size:13.5px"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="results-head">
+      <span class="count" id="count"></span>
+      <button class="clearall" id="clear">Clear filters &amp; location</button>
+    </div>
+    <div class="list" id="list"></div>
+  </aside>
+
+  <div class="map-wrap">
+    <div id="map"></div>
+    <button class="about-toggle" id="aboutBtn">About this data</button>
+    <div class="legend">
+      <h4>Tradition</h4>
+      <div id="legendRows"></div>
+      <div class="row" style="margin-top:7px"><span class="swatch ring" style="background:var(--vermilion)"></span>Featured temple</div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="aboutModal">
+  <div class="modal-card">
+    <div class="m-head">
+      <h3>About this data</h3>
+      <button class="close" id="aboutClose">×</button>
+    </div>
+    <div class="body">
+      <p>This directory merges two independent research passes (one from Gemini, one from ChatGPT) and then verifies every entry against <b>Google Places</b> — so temple names, street addresses and map coordinates reflect the actual buildings, not town-centre approximations.</p>
+      <p>That verification does three things at once: it pins each temple to its real location, it separates temples that the source lists had stacked on a single city coordinate, and it filters out entries that turned out not to be Hindu temples (or, in one case, a temple in Alabama).</p>
+      <p>A small number of well-known temples that didn't return a clean Places match are included at <b>approximate locations</b> and labelled as such on their card.</p>
+      <p><b>Distances</b> are straight-line (as-the-crow-flies) from your postcode, meant for ranking rather than routing — tap <b>Directions</b> on any temple for a real driving route.</p>
+      <p>Coverage is broad but not exhaustive; national bodies list several hundred places of worship, and community temples open and move. If you spot something missing or out of date, it can be added.</p>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+const RAW = [{"name": "BAPS Shri Swaminarayan Mandir", "area": "Neasden", "region": "London", "county": "Brent", "lat": 51.5476, "lng": -0.2608, "addr": "Pramukh Swami Rd, Neasden, London NW10 8HW", "phone": "+44 20 8965 2651", "trad": "BAPS", "note": "Europe's first traditional stone mandir (1995).", "hl": 0, "approx": 0}, {"name": "Shri Sanatan Hindu Mandir", "area": "Wembley", "region": "London", "county": "Brent", "lat": 51.5435, "lng": -0.2982, "addr": "Ealing Rd, Wembley HA0 4TA", "phone": "+44 20 8903 7737", "trad": "General", "note": "", "hl": 0, "approx": 0}, {"name": "Shree Swaminarayan Mandir Kingsbury", "area": "Kingsbury", "region": "London", "county": "Brent", "lat": 51.582, "lng": -0.2578, "addr": "211 Kingsbury Rd, London NW9 8AQ", "phone": "+44 20 8200 1991", "trad": "Swaminarayan", "note": "", "hl": 0, "approx": 0}, {"name": "Sri Mahalakshmi Temple", "area": "East Ham", "region": "London", "county": "Newham", "lat": 51.5403, "lng": 0.0504, "addr": "241 High St N, London E12 6SJ", "phone": "+44 20 8552 5082", "trad": "Saiva", "note": "Sri Lankan Tamil temple to Mahalakshmi.", "hl": 0, "approx": 0}, {"name": "London Sri Murugan Temple", "area": "Manor Park", "region": "London", "county": "Newham", "lat": 51.5479, "lng": 0.0565, "addr": "78-90 Church Rd, London E12 6AF", "phone": "+44 20 8478 8433", "trad": "Saiva", "note": "Traditional Saiva Murugan temple.", "hl": 0, "approx": 0}, {"name": "Shirdi Sai Baba Temple", "area": "East Ham", "region": "London", "county": "Newham", "lat": 51.5424, "lng": 0.0504, "addr": "298 High St N, London E12 6SA", "phone": "+44 7543 556334", "trad": "General", "note": "Also houses the Gajanan Maharaj shrine.", "hl": 0, "approx": 0}, {"name": "SKS Swaminarayan Temple East London", "area": "Forest Gate", "region": "London", "county": "Newham", "lat": 51.5398, "lng": 0.036, "addr": "22-24 Shaftesbury Rd, London E7 8PD", "phone": "+44 20 8470 9375", "trad": "Swaminarayan", "note": "", "hl": 0, "approx": 0}, {"name": "VHP Hindu Centre", "area": "Ilford", "region": "London", "county": "Redbridge", "lat": 51.5569, "lng": 0.0747, "addr": "43 Cleveland Rd, Ilford IG1 1EE", "phone": "+44 20 8553 5471", "trad": "General", "note": "Long-standing Vishwa Hindu Parishad centre.", "hl": 0, "approx": 0}, {"name": "Durga Mandir", "area": "Ilford", "region": "London", "county": "Redbridge", "lat": 51.5463, "lng": 0.076, "addr": "3-9 Norman Rd, Ilford IG1 2NH", "phone": "+44 20 8514 4781", "trad": "General", "note": "", "hl": 0, "approx": 0}, {"name": "Sri Selva Vinayagar Temple", "area": "Ilford", "region": "London", "county": "Redbridge", "lat": 51.5637, "lng": 0.0819, "addr": "303 Ley St, Ilford IG1 4BN", "phone": "+44 20 3931 8095", "trad": "Saiva", "note": "Ganesha temple.", "hl": 0, "approx": 0}, {"name": "Shirdi Sai Temple", "area": "Ilford", "region": "London", "county": "Redbridge", "lat": 51.5611, "lng": 0.0757, "addr": "122 Ley St, Ilford IG1 4BX", "phone": "+44 20 8514 8333", "trad": "General", "note": "", "hl": 0, "approx": 0}, {"name": "Sri Siva Shakti Temple", "area": "Ilford", "region": "London", "county": "Redbridge", "lat": 51.562, "lng": 0.109, "addr": "1A Cardigan Gardens, Ilford IG3 9SY", "phone": "", "trad": "Saiva", "note": "", "hl": 0, "approx": 0}, {"name": "Shree Ghanapathy Temple", "area": "Wimbledon", "region": "London", "county": "Merton", "lat": 51.4234, "lng": -0.1893, "addr": "125-133 Effra Rd, London SW19 8PU", "phone": "+44 20 8542 7482", "trad": "Saiva", "note": "Ganesha temple established in the 1980s.", "hl": 0, "approx": 0}, {"name": "Shri Kanaga Thurkkai Amman Temple", "area": "West Ealing", "region": "London", "county": "Ealing", "lat": 51.5104, "lng": -0.3179, "addr": "5 Chapel Rd, London W13 9AE", "phone": "+44 20 8810 0835", "trad": "Saiva", "note": "Ealing Amman Kovil.", "hl": 0, "approx": 0}, {"name": "Vishwa Hindu Mandir", "area": "Southall", "region": "London", "county": "Ealing", "lat": 51.5117, "lng": -0.3754, "addr": "2 Lady Margaret Rd, Southall UB1 2RA", "phone": "+44 20 8574 3870", "trad": "General", "note": "Major hub for West London.", "hl": 0, "approx": 0}, {"name": "Shree Ram Mandir", "area": "Southall", "region": "London", "county": "Ealing", "lat": 51.5015, "lng": -0.3828, "addr": "22 King St, Southall UB2 4DA", "phone": "+44 20 8574 5276", "trad": "General", "note": "", "hl": 0, "approx": 0}, {"name": "Asamai Temple", "area": "Southall", "region": "London", "county": "Ealing", "lat": 51.5023, "lng": -0.3955, "addr": "144 Johnson St, Southall UB2 5BZ", "phone": "", "trad": "General", "note": "", "hl": 0, "approx": 0}, {"name": "Shree Jalaram Mandir & Community Centre", "area": "Greenford", "region": "London", "county": "Ealing", "lat": 51.5315, "lng": -0.3532, "addr": "39-45 Oldfield Ln S, Greenford UB6 9LB", "phone": "+44 20 8578 8088", "trad": "General", "note": "Dedicated to Jalaram Bapa; runs a community food hall.", "hl": 0, "approx": 0}, {"name": "Lakshmi Narayan Temple", "area": "Hounslow", "region": "London", "county": "Hounslow", "lat": 51.4755, "lng": -0.3658, "addr": "60 Neville Cl, Hounslow TW3 4JG", "phone": "+44 20 8570 1340", "trad": "General", "note": "", "hl": 0, "approx": 0}, {"name": "BAPS Shri Swaminarayan Mandir", "area": "Osterley", "region": "London", "county": "Hounslow", "lat": 51.4797, "lng": -0.3556, "addr": "Gresham Rd, Hounslow TW3 4BX", "phone": "", "trad": "BAPS", "note": "", "hl": 0, "approx": 0}, {"name": "Hanuman Hindu Temple", "area": "Brentford", "region": "London", "county": "Hounslow", "lat": 51.4828, "lng": -0.3181, "addr": "51 Beech Ave, Brentford TW8 8NQ", "phone": "", "trad": "General", "note": "", "hl": 0, "approx": 0}, {"name": "Jalaram Jupadi Temple", "area": "Hounslow", "region": "London", "county": "Hounslow", "lat": 51.4634, "lng": -0.3878, "addr": "497A Barrack Rd, Hounslow TW4 6AB", "phone": "", "trad": "General", "note": "", "hl": 0, "approx": 0}, {"name": "Shree Kutch Satsang Swaminarayan Temple", "area": "Kenton", "region": "London", "county": "Harrow", "lat": 51.5878, "lng": -0.3016, "addr": "Westfield Ln, Harrow HA3 9EA", "phone": "+44 20 8909 9899", "trad": "Swaminarayan", "note": "", "hl": 0, "approx": 0}, {"name": "Shri Sithi Vinayagar Thevasthanam", "area": "Harrow", "region": "London", "county": "Harrow", "lat": 51.5872, "lng": -0.3326, "addr": "Unit B, 59 Station Rd, Harrow HA1 2TY", "phone": "+44 20 8427 5428", "trad": "Saiva", "note": "Ganapathi temple.", "hl": 0, "approx": 0}, {"name": "International Siddhashram Shakti Centre", "area": "Harrow", "region": "London", "county": "Harrow", "lat": 51.5936, "lng": -0.3338, "addr": "22 Palmerston Rd, Harrow HA3 7RR", "phone": "+44 20 8426 0678", "trad": "General", "note": "", "hl": 0, "approx": 0}, {"name": "Harisumiran Swaminarayan Temple", "area": "Harrow", "region": "London", "county": "Harrow", "lat": 51.5822, "lng": -0.306, "addr": "63 Woodcock Hill, Harrow HA3 0JH", "phone": "", "trad": "Swaminarayan", "note": "", "hl": 0, "approx": 0}, {"name": "Shrinathdham National Haveli", "area": "Harrow", "region": "London", "county": "Harrow", "lat": 51.5896, "lng": -0.3318, "addr": "2a Rosslyn Cres, Harrow HA1 2SU", "phone": "+44 20 8861 1207", "trad": "General", "note": "Pushtimarg (Vaishnav) haveli and community centre.", "hl": 0, "approx": 0}, {"name": "London Sree Ayyappan Temple", "area": "Harrow", "region": "London", "county": "Harrow", "lat": 51.5921, "lng": -0.3322, "addr": "36 Masons Ave, Harrow HA3 5AR", "phone": "+44 20 8861 5825", "trad": "Saiva", "note": "Ayyappan temple.", "hl": 0, "approx": 0}, {"name": "Shree Swaminarayan Mandir Loyadham", "area": "South Harrow", "region": "London", "county": "Harrow", "lat": 51.5694, "lng": -0.3461, "addr": "15 Roxeth Hill, South Harrow HA2 0JY", "phone": "+44 7866 049963", "trad": "Swaminarayan", "note": "", "hl": 0, "approx": 0}, {"name": "Highgate Hill Murugan Temple", "area": "Highgate", "region": "London", "county": "Haringey", "lat": 51.5734, "lng": -0.1406, "addr": "200A Archway Rd, London N6 5BA", "phone": "+44 20 8348 9835", "trad": "Saiva", "note": "Murugan temple.", "hl": 0, "approx": 0}, {"name": "ISKCON London Radha-Krishna Temple", "area": "Soho", "region": "London", "county": "Westminster", "lat": 51.5159, "lng": -0.1327, "addr": "10 Soho St, London W1D 3DL", "phone": "+44 20 7437 3662", "trad": "ISKCON", "note": "Central London ISKCON hub with Govinda's restaurant.", "hl": 0, "approx": 0}, {"name": "Hindu Society Centre", "area": "Tooting", "region": "London", "county": "Wandsworth", "lat": 51.4334, "lng": -0.1849, "addr": "664 Garratt Ln, London SW17 0NP", "phone": "+44 20 8944 0251", "trad": "General", "note": "Rebuilt mandir and community hall.", "hl": 0, "approx": 0}, {"name": "Muththumari Amman Temple", "area": "Mitcham", "region": "London", "county": "Croydon", "lat": 51.3899, "lng": -0.1243, "addr": "128 Aurelia Rd, Croydon CR0 3BF", "phone": "+44 20 8767 9881", "trad": "Saiva", "note": "Amman (Shakti) temple.", "hl": 0, "approx": 0}, {"name": "Sivaskanthagiri Murugan Kovil", "area": "Thornton Heath", "region": "London", "county": "Croydon", "lat": 51.3933, "lng": -0.1149, "addr": "13 Thornton Rd, Thornton Heath CR7 6BD", "phone": "+44 20 8684 0747", "trad": "Saiva", "note": "Murugan temple.", "hl": 0, "approx": 0}, {"name": "ISKCON South London Temple", "area": "South Norwood", "region": "London", "county": "Croydon", "lat": 51.393, "lng": -0.0709, "addr": "42 Enmore Rd, London SE25 5NG", "phone": "+44 300 040 0001", "trad": "ISKCON", "note": "ISKCON centre for South London.", "hl": 0, "approx": 0}, {"name": "Sri Nagapoosani Amman Temple", "area": "Croydon", "region": "London", "county": "Croydon", "lat": 51.3841, "lng": -0.1081, "addr": "2a Elmwood Rd, Croydon CR0 2SG", "phone": "+44 7492 454500", "trad": "Saiva", "note": "Amman temple.", "hl": 0, "approx": 0}, {"name": "Shree Vishva Sanaatana-Dharma Mandir", "area": "Croydon", "region": "London", "county": "Croydon", "lat": 51.3876, "lng": -0.096, "addr": "132 Whitehorse Rd, Croydon CR0 2LA", "phone": "+44 7956 348676", "trad": "General", "note": "Durga mandir.", "hl": 0, "approx": 0}, {"name": "BAPS Shri Swaminarayan Mandir", "area": "Chigwell", "region": "East of England", "county": "Essex", "lat": 51.6274, "lng": 0.0846, "addr": "Mandir Ln, Chigwell IG7 6ED", "phone": "", "trad": "BAPS", "note": "", "hl": 0, "approx": 0}, {"name": "Bhaktivedanta Manor", "area": "Aldenham", "region": "East of England", "county": "Hertfordshire", "lat": 51.6655, "lng": -0.3383, "addr": "Hilfield Ln, Radlett, Watford WD25 8EZ", "phone": "+44 7778 051000", "trad": "ISKCON", "note": "ISKCON estate donated by George Harrison (1973).", "hl": 0, "approx": 0}, {"name": "Luton Hindu Temple & Community Centre", "area": "Luton", "region": "East of England", "county": "Bedfordshire", "lat": 51.8978, "lng": -0.4892, "addr": "Hereford Rd, Luton LU4 0PS", "phone": "+44 1582 663414", "trad": "General", "note": "", "hl": 0, "approx": 0}, {"name": "BAPS Shri Swaminarayan Mandir", "area": "Luton", "region": "East of England", "county": "Bedfordshire", "lat": 51.8803, "lng": -0.4034, "addr": "39 Crescent Rd, Luton LU2 0AH", "phone": "+44 1582 455295", "trad": "BAPS", "note": "", "hl": 0, "approx": 0}, {"name": "Bedford Hindu Temple & Community Trust", "area": "Bedford", "region": "East of England", "county": "Bedfordshire", "lat": 52.1406, "lng": -0.4692, "addr": "5 Peel St, Bedford MK40 2HX", "phone": "+44 7442 988966", "trad": "General", "note": "Shiva temple and community trust.", "hl": 0, "approx": 0}, {"name": "Bhagwan Valmik Sabha", "area": "Bedford", "region": "East of England", "county": "Bedfordshire", "lat": 52.1239, "lng": -0.4714, "addr": "6-8 Muswell Rd, Bedford MK42 9PH", "phone": "", "trad": "General", "note": "", "hl": 0, "approx": 0}, {"name": "Milton Keynes Murugan Temple", "area": "Neath Hill", "region": "East of England", "county": "Buckinghamshire", "lat": 52.0573, "lng": -0.7536, "addr": "Glazier Dr, Neath Hill, Milton Keynes MK14 6HG", "phone": "+44 7729 050740", "trad": "Saiva", "note": "Murugan temple.", "hl": 0, "approx": 0}, {"name": "Sri Siddhi Vinayak Mandir", "area": "Broughton", "region": "East of England", "county": "Buckinghamshire", "lat": 52.0499, "lng": -0.6997, "addr": "Ferry Meadows Cl, Broughton, Milton Keynes MK10 9QY", "phone": "+44 7900 562623", "trad": "General", "note": "At the MK Hindu Association centre.", "hl": 0, "approx": 0}, {"name": "Bharat Hindu Samaj Mandir", "area": "Peterborough", "region": "East of England", "county": "Cambridgeshire", "lat": 52.591, "lng": -0.2504, "addr": "Unit 6, New England Complex, 11 Rock Rd, Peterborough PE1 3BU", "phone": "+44 1733 315241", "trad": "General", "note": "Long the main Hindu temple serving Peterborough and the wider area; subject of a council sale dispute.", "hl": 1, "approx": 0}, {"name": "Slough Hindu Temple", "area": "Slough", "region": "South East", "county": "Berkshire", "lat": 51.5087, "lng": -0.6151, "addr": "Keel Dr, Slough SL1 2XU", "phone": "+44 1753 790135", "trad": "General", "note": "Among the first purpose-built Hindu temples in Britain (1981).", "hl": 0, "approx": 0}, {"name": "Reading Hindu Temple", "area": "Reading", "region": "South East", "county": "Berkshire", "lat": 51.4442, "lng": -0.9654, "addr": "112 Whitley St, Reading RG2 0EQ", "phone": "+44 118 975 1067", "trad": "General", "note": "", "hl": 0, "approx": 0}, {"name": "Shirdi Saibaba Temple", "area": "Reading", "region": "South East", "county": "Berkshire", "lat": 51.4562, "lng": -0.9763, "addr": "44 West St, Reading RG1 1TZ", "phone": "+44 118 959 1084", "trad": "General", "note": "", "hl": 0, "approx": 0}, {"name": "Vedic Society Hindu Temple", "area": "Southampton", "region": "South East", "county": "Hampshire", "lat": 50.9122, "lng": -1.3905, "addr": "79-195 Radcliffe Rd, Southampton SO14 0PS", "phone": "+44 23 8063 2275", "trad": "General", "note": "Founded 1971; among the UK's oldest Hindu temples.", "hl": 0, "approx": 0}, {"name": "The Hindu Temple", "area": "Bristol", "region": "South West", "county": "Bristol", "lat": 51.459, "lng": -2.557, "addr": "163B Church Rd, Redfield, Bristol BS5 9LA", "phone": "+44 117 935 1007", "trad": "General", "note": "One of the largest Hindu temples in Bristol.", "hl": 0, "approx": 0}, {"name": "Hindu Community Centre & Krishna Mandir", "area": "Cheltenham", "region": "South West", "county": "Gloucestershire", "lat": 51.9052, "lng": -2.0805, "addr": "Swindon Rd, Cheltenham GL50 4AY", "phone": "+44 1242 584250", "trad": "General", "note": "The only mandir in Cheltenham.", "hl": 0, "approx": 0}, {"name": "Swindon Hindu Temple", "area": "Swindon", "region": "South West", "county": "Wiltshire", "lat": 51.5589, "lng": -1.781, "addr": "Regent House, Theatre Sq, Swindon SN1 1QN", "phone": "+44 1793 230338", "trad": "General", "note": "The only Hindu temple in Swindon.", "hl": 0, "approx": 0}, {"name": "Shree Hindu Temple & Community Centre", "area": "Leicester", "region": "East Midlands", "county": "Leicestershire", "lat": 52.6408, "lng": -1.0981, "addr": "34 St Barnabas Rd, Leicester LE5 4BD", "phone": "+44 116 246 4590", "trad": "General", "note": "Multi-deity mandir and community centre.", "hl": 0, "approx": 0}, {"name": "Shree Sanatan Mandir", "area": "Leicester", "region": "East Midlands", "county": "Leicestershire", "lat": 52.6478, "lng": -1.1149, "addr": "84 Weymouth St, Leicester LE4 6FQ", "phone": "+44 116 266 1402", "trad": "General", "note": "Carved limestone mandir.", "hl": 0, "approx": 0}, {"name": "BAPS Shri Swaminarayan Mandir", "area": "Leicester", "region": "East Midlands", "county": "Leicestershire", "lat": 52.6541, "lng": -1.1031, "addr": "135 Gipsy Ln, Leicester LE4 6RH", "phone": "+44 116 262 3791", "trad": "BAPS", "note": "", "hl": 0, "approx": 0}, {"name": "Leicester Shri Siva Murugan Temple", "area": "Leicester", "region": "East Midlands", "county": "Leicestershire", "lat": 52.6473, "lng": -1.1267, "addr": "6 Ross Walk, Leicester LE4 5HH", "phone": "+44 116 367 2217", "trad": "Saiva", "note": "South Indian Saiva temple.", "hl": 0, "approx": 0}, {"name": "Shree Hanuman Temple - Salangpur Dham", "area": "Leicester", "region": "East Midlands", "county": "Leicestershire", "lat": 52.6599, "lng": -1.1137, "addr": "299 Melton Rd, Leicester LE4 7AN", "phone": "+44 116 266 5717", "trad": "General", "note": "Hanuman temple on the Golden Mile.", "hl": 0, "approx": 0}, {"name": "Shree Jalaram Prarthana Mandal", "area": "Leicester", "region": "East Midlands", "county": "Leicestershire", "lat": 52.6286, "lng": -1.1497, "addr": "85 Narborough Rd, Leicester LE3 0LF", "phone": "+44 116 254 0117", "trad": "General", "note": "Dedicated to Jalaram Bapa.", "hl": 0, "approx": 0}, {"name": "Shirdi SaiBaba Temple", "area": "Leicester", "region": "East Midlands", "county": "Leicestershire", "lat": 52.6434, "lng": -1.1266, "addr": "18 Melton St, Leicester LE1 3NB", "phone": "+44 116 367 1833", "trad": "General", "note": "", "hl": 0, "approx": 0}, {"name": "Shree Ram Mandir", "area": "Leicester", "region": "East Midlands", "county": "Leicestershire", "lat": 52.65, "lng": -1.127, "addr": "1 Hildyard Rd, Leicester LE4 5GG", "phone": "+44 116 266 4642", "trad": "General", "note": "", "hl": 0, "approx": 0}, {"name": "Shree Swaminarayan Temple", "area": "Leicester", "region": "East Midlands", "county": "Leicestershire", "lat": 52.6571, "lng": -1.1215, "addr": "139-141 Loughborough Rd, Leicester LE4 5LQ", "phone": "+44 116 266 6210", "trad": "Swaminarayan", "note": "", "hl": 0, "approx": 0}, {"name": "Sri Jeya Durga Temple", "area": "Leicester", "region": "East Midlands", "county": "Leicestershire", "lat": 52.6594, "lng": -1.1223, "addr": "201 Loughborough Rd, Leicester LE4 7QH", "phone": "+44 7405 986892", "trad": "Saiva", "note": "", "hl": 0, "approx": 0}, {"name": "Shivalaya - Leicestershire Brahma Samaj", "area": "Leicester", "region": "East Midlands", "county": "Leicestershire", "lat": 52.6468, "lng": -1.1244, "addr": "15 Belgrave Rd, Leicester LE4", "phone": "+44 116 251 2541", "trad": "General", "note": "Shiva temple on the Golden Mile.", "hl": 0, "approx": 0}, {"name": "Geeta Bhavan", "area": "Leicester", "region": "East Midlands", "county": "Leicestershire", "lat": 52.6171, "lng": -1.1159, "addr": "70 Clarendon Park Rd, Leicester LE2 3AD", "phone": "+44 116 270 7756", "trad": "General", "note": "", "hl": 0, "approx": 0}, {"name": "BAPS Shri Swaminarayan Mandir", "area": "Loughborough", "region": "East Midlands", "county": "Leicestershire", "lat": 52.769, "lng": -1.1998, "addr": "132 Moira St, Loughborough LE11 1AX", "phone": "+44 7496 718977", "trad": "BAPS", "note": "", "hl": 0, "approx": 0}, {"name": "Geeta Bhavan Hindu Temple", "area": "Loughborough", "region": "East Midlands", "county": "Leicestershire", "lat": 52.7734, "lng": -1.2039, "addr": "Lemyngton St, Loughborough LE11 1UH", "phone": "+44 7815 610945", "trad": "General", "note": "", "hl": 0, "approx": 0}, {"name": "Hindu Temple & Community Centre", "area": "Nottingham", "region": "East Midlands", "county": "Nottinghamshire", "lat": 52.9588, "lng": -1.1266, "addr": "215 Carlton Rd, Nottingham NG3 2FX", "phone": "+44 115 911 3384", "trad": "General", "note": "", "hl": 0, "approx": 0}, {"name": "Hindu Temple Geeta Bhawan", "area": "Derby", "region": "East Midlands", "county": "Derbyshire", "lat": 52.9068, "lng": -1.4784, "addr": "96-102 Pear Tree Rd, Derby DE23 6QA", "phone": "+44 1332 380407", "trad": "General", "note": "The main Hindu temple in Derby.", "hl": 0, "approx": 0}, {"name": "Hindu Mandir", "area": "Wellingborough", "region": "East Midlands", "county": "Northamptonshire", "lat": 52.3054, "lng": -0.6822, "addr": "133 Highfield Rd, Wellingborough NN8 1PL", "phone": "+44 1933 222250", "trad": "General", "note": "", "hl": 0, "approx": 0}, {"name": "BAPS Shri Swaminarayan Mandir", "area": "Wellingborough", "region": "East Midlands", "county": "Northamptonshire", "lat": 52.3034, "lng": -0.6882, "addr": "2-22 Mill Rd, Wellingborough NN8 1PE", "phone": "+44 1933 272061", "trad": "BAPS", "note": "", "hl": 0, "approx": 0}, {"name": "Shri Venkateswara (Balaji) Temple", "area": "Tividale", "region": "West Midlands", "county": "Sandwell", "lat": 52.5133, "lng": -2.03, "addr": "101 Dudley Rd E, Tividale, Oldbury B69 3DU", "phone": "+44 121 544 2256", "trad": "General", "note": "One of the largest Hindu temple complexes in Europe (opened 2006).", "hl": 0, "approx": 0}, {"name": "Shree Geeta Bhawan", "area": "Handsworth", "region": "West Midlands", "county": "Birmingham", "lat": 52.5057, "lng": -1.911, "addr": "107-117 Heathfield Rd, Handsworth, Birmingham B19 1HL", "phone": "+44 121 554 4120", "trad": "General", "note": "One of Birmingham's oldest mandirs.", "hl": 0, "approx": 0}, {"name": "BAPS Shri Swaminarayan Mandir", "area": "Hall Green", "region": "West Midlands", "county": "Birmingham", "lat": 52.4263, "lng": -1.8316, "addr": "75 Pitmaston Rd, Hall Green, Birmingham B28 9PP", "phone": "+44 121 667 3223", "trad": "BAPS", "note": "", "hl": 0, "approx": 0}, {"name": "Shree Laxmi Narayan Mandir", "area": "Tyseley", "region": "West Midlands", "county": "Birmingham", "lat": 52.4532, "lng": -1.8472, "addr": "541A Warwick Rd, Tyseley, Birmingham B11 2JP", "phone": "+44 121 707 3154", "trad": "General", "note": "", "hl": 0, "approx": 0}, {"name": "Shree Ram Mandir", "area": "Sparkbrook", "region": "West Midlands", "county": "Birmingham", "lat": 52.4592, "lng": -1.8701, "addr": "8 Walford Rd, Sparkbrook, Birmingham B11 1NR", "phone": "+44 121 773 5735", "trad": "General", "note": "", "hl": 0, "approx": 0}, {"name": "Durga Bhawan", "area": "Smethwick", "region": "West Midlands", "county": "Sandwell", "lat": 52.5032, "lng": -1.9915, "addr": "360 Spon Ln S, Smethwick B66 1AB", "phone": "+44 7828 602527", "trad": "General", "note": "", "hl": 0, "approx": 0}, {"name": "Shree Krishna Mandir", "area": "West Bromwich", "region": "West Midlands", "county": "Sandwell", "lat": 52.5294, "lng": -2.0067, "addr": "81 Old Meeting St, West Bromwich B70 9SZ", "phone": "", "trad": "General", "note": "", "hl": 0, "approx": 0}, {"name": "Hindu Temple Society", "area": "Coventry", "region": "West Midlands", "county": "West Midlands", "lat": 52.4222, "lng": -1.4966, "addr": "380 Stoney Stanton Rd, Coventry CV6 5DJ", "phone": "+44 24 7668 5898", "trad": "General", "note": "", "hl": 0, "approx": 0}, {"name": "Coventry Shri Sidhi Vinayagar Devasthanam", "area": "Coventry", "region": "West Midlands", "county": "West Midlands", "lat": 52.4199, "lng": -1.5037, "addr": "65A George Eliot Rd, Coventry CV1 4HT", "phone": "+44 24 7663 2211", "trad": "Saiva", "note": "Ganesha temple.", "hl": 0, "approx": 0}, {"name": "Sanatan Dharm Hindu Temple", "area": "Coventry", "region": "West Midlands", "county": "West Midlands", "lat": 52.4352, "lng": -1.4921, "addr": "56 Mason Rd, Coventry CV6 7FJ", "phone": "+44 24 7668 5125", "trad": "General", "note": "", "hl": 0, "approx": 0}, {"name": "Shree Krishna Temple", "area": "Coventry", "region": "West Midlands", "county": "West Midlands", "lat": 52.416, "lng": -1.5079, "addr": "Harnall Ln W, Coventry CV1 4EZ", "phone": "+44 24 7625 6981", "trad": "General", "note": "", "hl": 0, "approx": 0}, {"name": "ISKCON Coventry", "area": "Coventry", "region": "West Midlands", "county": "West Midlands", "lat": 52.4221, "lng": -1.5091, "addr": "Kingfield Rd, Coventry CV1 4DW", "phone": "+44 24 7655 2822", "trad": "ISKCON", "note": "", "hl": 0, "approx": 0}, {"name": "BAPS Shri Swaminarayan Mandir", "area": "Coventry", "region": "West Midlands", "county": "West Midlands", "lat": 52.4154, "lng": -1.4839, "addr": "53 Heath Rd, Coventry CV2 4QB", "phone": "+44 24 7643 1948", "trad": "BAPS", "note": "", "hl": 0, "approx": 0}, {"name": "Coventry Sripuram Siva Muthumariamman Thirukovil", "area": "Coventry", "region": "West Midlands", "county": "West Midlands", "lat": 52.4342, "lng": -1.5035, "addr": "Durbar Ave, Coventry CV6 5LW", "phone": "+44 7480 757792", "trad": "Saiva", "note": "First UK temple to Goddess Varahi.", "hl": 0, "approx": 0}, {"name": "Coventry-Eswaram (Shivan Temple)", "area": "Coventry", "region": "West Midlands", "county": "West Midlands", "lat": 52.4104, "lng": -1.4966, "addr": "Coventry CV1 5LS", "phone": "+44 7814 756577", "trad": "Saiva", "note": "Shiva temple.", "hl": 0, "approx": 0}, {"name": "Shree Krishan Mandir", "area": "Wolverhampton", "region": "West Midlands", "county": "West Midlands", "lat": 52.5747, "lng": -2.1364, "addr": "123 Penn Rd, Wolverhampton WV3 0DU", "phone": "+44 1902 772416", "trad": "General", "note": "", "hl": 0, "approx": 0}, {"name": "Ek Niwas Universal Divine Temple", "area": "Wolverhampton", "region": "West Midlands", "county": "West Midlands", "lat": 52.5764, "lng": -2.1258, "addr": "71-72 Dudley Rd, Wolverhampton WV2 3BY", "phone": "+44 1902 450494", "trad": "General", "note": "Baba Balak Nath temple.", "hl": 0, "approx": 0}, {"name": "Shri Durga Bhawan Temple", "area": "Bilston", "region": "West Midlands", "county": "West Midlands", "lat": 52.5703, "lng": -2.0884, "addr": "97 Wellington Rd, Bilston WV14 6BQ", "phone": "+44 1902 354081", "trad": "General", "note": "Hindu Welfare Society temple.", "hl": 0, "approx": 0}, {"name": "Hindu Cultural Society of Bradford", "area": "Bradford", "region": "Yorkshire and the Humber", "county": "West Yorkshire", "lat": 53.7926, "lng": -1.7349, "addr": "341 Leeds Rd, Bradford BD3 9LS", "phone": "+44 1274 395603", "trad": "General", "note": "Lakshmi Narayan mandir and cultural society.", "hl": 0, "approx": 0}, {"name": "Leeds Hindu Mandir", "area": "Burley", "region": "Yorkshire and the Humber", "county": "West Yorkshire", "lat": 53.8078, "lng": -1.5712, "addr": "36 Alexandra Rd, Burley, Leeds LS6 1RF", "phone": "+44 113 275 7024", "trad": "General", "note": "", "hl": 0, "approx": 0}, {"name": "BAPS Shri Swaminarayan Mandir", "area": "Burley", "region": "Yorkshire and the Humber", "county": "West Yorkshire", "lat": 53.8049, "lng": -1.5785, "addr": "1 Weaver St, Burley, Leeds LS4 2AU", "phone": "+44 7929 416749", "trad": "BAPS", "note": "", "hl": 0, "approx": 0}, {"name": "Hindu Samaj Sheffield & District", "area": "Sheffield", "region": "Yorkshire and the Humber", "county": "South Yorkshire", "lat": 53.3943, "lng": -1.4554, "addr": "21 Buckenham St, Sheffield S4 7JQ", "phone": "+44 7469 377333", "trad": "General", "note": "", "hl": 0, "approx": 0}, {"name": "Gita Bhavan Hindu Temple", "area": "Withington", "region": "North West", "county": "Greater Manchester", "lat": 53.4437, "lng": -2.2567, "addr": "231 Withington Rd, Manchester M16 8LU", "phone": "+44 161 861 7042", "trad": "General", "note": "Major Manchester mandir and community centre.", "hl": 0, "approx": 0}, {"name": "Radha Krishna Mandir", "area": "Withington", "region": "North West", "county": "Greater Manchester", "lat": 53.4331, "lng": -2.2233, "addr": "Brunswick Rd, Withington, Manchester M20 4QB", "phone": "+44 161 445 1134", "trad": "General", "note": "At Gandhi Hall, Indian Association Manchester.", "hl": 0, "approx": 0}, {"name": "ISKCON Manchester", "area": "Whalley Range", "region": "North West", "county": "Greater Manchester", "lat": 53.4521, "lng": -2.2545, "addr": "20 Mayfield Rd, Whalley Range, Manchester M16 8FT", "phone": "+44 161 226 4416", "trad": "ISKCON", "note": "", "hl": 0, "approx": 0}, {"name": "BAPS Shri Swaminarayan Mandir", "area": "Ashton-under-Lyne", "region": "North West", "county": "Greater Manchester", "lat": 53.5064, "lng": -2.0785, "addr": "105 Lees Rd, Ashton-under-Lyne OL6 8BQ", "phone": "+44 161 330 5196", "trad": "BAPS", "note": "", "hl": 0, "approx": 0}, {"name": "Shree Swaminarayan Mandir Bolton", "area": "Bolton", "region": "North West", "county": "Greater Manchester", "lat": 53.5728, "lng": -2.4426, "addr": "161 Deane Rd, Bolton BL3 5AH", "phone": "", "trad": "Swaminarayan", "note": "", "hl": 0, "approx": 0}, {"name": "Shree Kutch Satsang Swaminarayan Temple", "area": "Bolton", "region": "North West", "county": "Greater Manchester", "lat": 53.5652, "lng": -2.4461, "addr": "1-11 Adelaide St, Bolton BL3 3NY", "phone": "+44 1204 652604", "trad": "Swaminarayan", "note": "", "hl": 0, "approx": 0}, {"name": "World Council of Hindus (VHP) Bolton", "area": "Bolton", "region": "North West", "county": "Greater Manchester", "lat": 53.5829, "lng": -2.4399, "addr": "1 Thomas Holden St, Bolton BL1 2QG", "phone": "+44 1204 527492", "trad": "General", "note": "", "hl": 0, "approx": 0}, {"name": "Shree Swaminarayan Mandir Oldham", "area": "Oldham", "region": "North West", "county": "Greater Manchester", "lat": 53.531, "lng": -2.1145, "addr": "Copster Hill Rd, Oldham OL8 1QB", "phone": "+44 161 652 0993", "trad": "Swaminarayan", "note": "", "hl": 0, "approx": 0}, {"name": "Shree Ram Mandir", "area": "Ashton-under-Lyne", "region": "North West", "county": "Greater Manchester", "lat": 53.4894, "lng": -2.1041, "addr": "58 Kenyon St, Ashton-under-Lyne OL6 7DU", "phone": "+44 161 343 4639", "trad": "General", "note": "Family-run mandir of 50+ years.", "hl": 0, "approx": 0}, {"name": "Gujarat Hindu Society Temple", "area": "Preston", "region": "North West", "county": "Lancashire", "lat": 53.7528, "lng": -2.7118, "addr": "South Meadow Ln, Preston PR1 8JN", "phone": "+44 1772 253901", "trad": "General", "note": "One of the largest temples in Lancashire.", "hl": 0, "approx": 0}, {"name": "BAPS Shri Swaminarayan Mandir", "area": "Preston", "region": "North West", "county": "Lancashire", "lat": 53.7583, "lng": -2.7141, "addr": "Pramukh Swami Pl, Preston PR1 8AH", "phone": "+44 1772 562252", "trad": "BAPS", "note": "", "hl": 0, "approx": 0}, {"name": "Hindu Cultural Organisation", "area": "Liverpool", "region": "North West", "county": "Merseyside", "lat": 53.4084, "lng": -2.9453, "addr": "253 Edge Ln, Edge Hill, Liverpool L7 9LB", "phone": "+44 151 538 5442", "trad": "General", "note": "North-Indian community temple; serves meals on Tuesdays.", "hl": 0, "approx": 0}, {"name": "Sri Muthumari Amman Temple", "area": "Kensington", "region": "North West", "county": "Merseyside", "lat": 53.4126, "lng": -2.9573, "addr": "17 Fielding St, Kensington, Liverpool L6 9AP", "phone": "+44 151 260 3657", "trad": "Saiva", "note": "Amman temple.", "hl": 0, "approx": 0}, {"name": "Liverpool Shiva Vishnu Temple", "area": "Birkenhead", "region": "North West", "county": "Merseyside", "lat": 53.3912, "lng": -3.0256, "addr": "6 Hemingford St, Birkenhead CH41 4AP", "phone": "+44 7508 657674", "trad": "Saiva", "note": "", "hl": 0, "approx": 0}, {"name": "Liverpool Ganesh Temple", "area": "Kirkby", "region": "North West", "county": "Merseyside", "lat": 53.4773, "lng": -2.875, "addr": "13 Delfby Cres, Kirkby, Liverpool L32 8TN", "phone": "+44 151 546 7611", "trad": "Saiva", "note": "Ganesha temple.", "hl": 0, "approx": 0}, {"name": "Hindu Temple Newcastle", "area": "Newcastle upon Tyne", "region": "North East", "county": "Tyne and Wear", "lat": 54.9764, "lng": -1.6571, "addr": "172 West Rd, Newcastle upon Tyne NE4 9QB", "phone": "+44 191 273 3364", "trad": "General", "note": "Serves the North East Hindu community.", "hl": 0, "approx": 0}, {"name": "ISKCON Newcastle", "area": "Newcastle upon Tyne", "region": "North East", "county": "Tyne and Wear", "lat": 54.9719, "lng": -1.6298, "addr": "304 Westgate Rd, Newcastle upon Tyne NE4 6AR", "phone": "+44 191 272 1576", "trad": "ISKCON", "note": "", "hl": 0, "approx": 0}, {"name": "Aberdeen Hindu Temple", "area": "Aberdeen", "region": "Scotland", "county": "Aberdeen", "lat": 57.1826, "lng": -2.179, "addr": "Bankhead Rd, Bucksburn, Aberdeen AB21 9HQ", "phone": "+44 7459 146553", "trad": "General", "note": "The only Hindu temple in the north of Scotland.", "hl": 0, "approx": 0}, {"name": "Edinburgh Hindu Mandir & Cultural Centre", "area": "Leith", "region": "Scotland", "county": "Edinburgh", "lat": 55.9706, "lng": -3.1693, "addr": "St Andrew Pl, Leith, Edinburgh EH6 7EG", "phone": "+44 131 677 0905", "trad": "General", "note": "", "hl": 0, "approx": 0}, {"name": "Om Hindu Mandir", "area": "Glasgow", "region": "Scotland", "county": "Glasgow", "lat": 55.8666, "lng": -4.2792, "addr": "1 La Belle Pl, Glasgow G3 7LH", "phone": "+44 141 332 0482", "trad": "General", "note": "One of the oldest Hindu temples in Glasgow.", "hl": 0, "approx": 0}, {"name": "The Hindu Temple of Scotland", "area": "Rutherglen", "region": "Scotland", "county": "Glasgow", "lat": 55.8269, "lng": -4.2073, "addr": "76 Hamilton Rd, Rutherglen, Glasgow G73 3DQ", "phone": "+44 7843 602134", "trad": "Saiva", "note": "South Indian / Tamil tradition.", "hl": 0, "approx": 0}, {"name": "Sri Mangala Vinayagar Temple", "area": "Glasgow", "region": "Scotland", "county": "Glasgow", "lat": 55.8835, "lng": -4.2522, "addr": "105 Denmark St, Glasgow G22 5EU", "phone": "+44 7777 749582", "trad": "Saiva", "note": "Ganesha temple.", "hl": 0, "approx": 0}, {"name": "Dundee Hindu Cultural & Community Centre", "area": "Dundee", "region": "Scotland", "county": "Dundee", "lat": 56.4559, "lng": -2.9939, "addr": "10 Taylor's Ln, Dundee DD2 1AQ", "phone": "+44 1382 669652", "trad": "General", "note": "Serves the Dundee Hindu community.", "hl": 0, "approx": 0}, {"name": "Shree Swaminarayan Temple Cardiff", "area": "Grangetown", "region": "Wales", "county": "Cardiff", "lat": 51.474, "lng": -3.1863, "addr": "4 Merches Pl, Cardiff CF11 6RD", "phone": "+44 29 2037 1128", "trad": "Swaminarayan", "note": "", "hl": 0, "approx": 0}, {"name": "Sanatan Dharma Mandal & Hindu Community Centre", "area": "Cardiff", "region": "Wales", "county": "Cardiff", "lat": 51.4783, "lng": -3.1525, "addr": "Lewis Rd, Cardiff CF24 5EB", "phone": "+44 7747 080251", "trad": "General", "note": "", "hl": 0, "approx": 0}, {"name": "Dharma Mandir Newport", "area": "Newport", "region": "Wales", "county": "Newport", "lat": 51.5606, "lng": -3.0373, "addr": "Duffryn, Newport NP10 8BD", "phone": "+44 7904 082373", "trad": "General", "note": "", "hl": 0, "approx": 0}, {"name": "Skanda Vale (Maha Shakti Temple)", "area": "Llanpumsaint", "region": "Wales", "county": "Carmarthenshire", "lat": 51.9664, "lng": -4.2972, "addr": "Skanda Vale, Llanpumsaint, Carmarthen SA33 6JT", "phone": "+44 1559 384421", "trad": "General", "note": "Multi-faith ashram community in the Carmarthenshire hills.", "hl": 0, "approx": 0}, {"name": "ISKCON Belfast Krishna Temple", "area": "Dunmurry", "region": "Northern Ireland", "county": "Antrim", "lat": 54.5613, "lng": -6.0168, "addr": "2a Brooklands Grange, Dunmurry, Belfast BT17 0SA", "phone": "+44 7876 489319", "trad": "ISKCON", "note": "", "hl": 0, "approx": 0}, {"name": "Krishna Island (ISKCON Govindadwipa)", "area": "Derrylin", "region": "Northern Ireland", "county": "Fermanagh", "lat": 54.1924, "lng": -7.4845, "addr": "Derrylin, Enniskillen BT92 9GN", "phone": "+44 7548 311916", "trad": "ISKCON", "note": "ISKCON island temple on Lough Erne, reached by ferry.", "hl": 0, "approx": 0}, {"name": "Ipswich Hindu Samaj Mandir & Community Centre", "area": "Ipswich", "region": "East of England", "county": "Suffolk", "lat": 52.0576, "lng": 1.1533, "addr": "5 Thoroughfare, Ipswich IP1 1BX", "phone": "+44 1473 399391", "trad": "General", "note": "The only Hindu temple in Ipswich.", "hl": 0, "approx": 0}, {"name": "Vedic Cultural Society of East Anglia", "area": "Tunstall", "region": "East of England", "county": "Norfolk", "lat": 52.624, "lng": 1.6018, "addr": "Tunstall, Norwich NR13 3QE", "phone": "+44 7879 420072", "trad": "General", "note": "Monthly havan and festival gatherings near Norwich.", "hl": 0, "approx": 0}, {"name": "Chelmsford Shri Sanatana Shakti Mandir", "area": "Great Baddow", "region": "East of England", "county": "Essex", "lat": 51.7208, "lng": 0.4881, "addr": "37 Beehive Ln, Great Baddow, Chelmsford CM2 9TQ", "phone": "", "trad": "General", "note": "", "hl": 0, "approx": 0}, {"name": "BAPS Shri Swaminarayan Mandir", "area": "Southend-on-Sea", "region": "East of England", "county": "Essex", "lat": 51.5399, "lng": 0.7167, "addr": "190 Queensway, Southend-on-Sea SS1 2LU", "phone": "+44 1702 617381", "trad": "BAPS", "note": "", "hl": 0, "approx": 0}, {"name": "Southend Meenatshe Sundaresar Kovil", "area": "Southend-on-Sea", "region": "East of England", "county": "Essex", "lat": 51.5428, "lng": 0.7184, "addr": "105 Sutton Rd, Southend-on-Sea SS2 5PB", "phone": "+44 7367 611601", "trad": "Saiva", "note": "Shiva (Sundareswarar) and Meenakshi temple.", "hl": 0, "approx": 0}, {"name": "Venkatakrishna Vrindavana (Udupi Sri Puthige Matha)", "area": "St Albans", "region": "East of England", "county": "Hertfordshire", "lat": 51.7508, "lng": -0.3292, "addr": "1 Beaconsfield Rd, St Albans AL1 3RD", "phone": "+44 7424 342419", "trad": "General", "note": "Udupi Krishna temple in a converted church.", "hl": 0, "approx": 0}, {"name": "U.K. Nagara Shiva Temple", "area": "Chiswell Green", "region": "East of England", "county": "Hertfordshire", "lat": 51.7289, "lng": -0.3543, "addr": "Tippendell Ln, Chiswell Green, St Albans AL2 3HW", "phone": "", "trad": "Saiva", "note": "Monthly Shiva worship gatherings.", "hl": 0, "approx": 0}, {"name": "Watford Velmurugan Hindu Temple", "area": "Watford", "region": "East of England", "county": "Hertfordshire", "lat": 51.68, "lng": -0.3959, "addr": "453 St Albans Rd, Watford WD24 7RZ", "phone": "+44 1923 229564", "trad": "Saiva", "note": "Murugan temple.", "hl": 0, "approx": 0}, {"name": "BAPS Shri Swaminarayan Mandir", "area": "Havant", "region": "South East", "county": "Hampshire", "lat": 50.8549, "lng": -0.9809, "addr": "9 Leigh Rd, Havant PO9 2ES", "phone": "+44 7412 694319", "trad": "BAPS", "note": "Serves the Portsmouth area.", "hl": 0, "approx": 0}, {"name": "Shree Swaminarayan Temple (ISSO)", "area": "Portslade", "region": "South East", "county": "East Sussex", "lat": 50.8368, "lng": -0.2163, "addr": "79a Trafalgar Rd, Portslade, Brighton BN41 1GU", "phone": "+44 1273 420200", "trad": "Swaminarayan", "note": "Serves Brighton and Hove.", "hl": 0, "approx": 0}, {"name": "Crawley Hindu Temple", "area": "Crawley", "region": "South East", "county": "West Sussex", "lat": 51.1303, "lng": -0.211, "addr": "Apple Tree Centre, Ifield Ave, Crawley RH11 0AF", "phone": "+44 7967 339790", "trad": "General", "note": "", "hl": 0, "approx": 0}, {"name": "Swaminarayan Hindu Temple (NarNarayan Dev Gadi)", "area": "Crawley", "region": "South East", "county": "West Sussex", "lat": 51.1358, "lng": -0.2098, "addr": "Bonnetts Ln, Crawley RH11 0NY", "phone": "+44 1293 550660", "trad": "Swaminarayan", "note": "Near Gatwick Airport.", "hl": 0, "approx": 0}, {"name": "Oxford Hindu Mandir & Community Centre", "area": "Oxford", "region": "South East", "county": "Oxfordshire", "lat": 51.772, "lng": -1.2295, "addr": "Marsh Ln, Oxford OX3 0NQ", "phone": "", "trad": "General", "note": "Opened 2026.", "hl": 0, "approx": 0}, {"name": "Medway Hindu Mandir", "area": "Gillingham", "region": "South East", "county": "Kent", "lat": 51.3785, "lng": 0.5485, "addr": "361 Canterbury St, Gillingham ME7 5XS", "phone": "+44 7940 569999", "trad": "General", "note": "Serves the Medway towns.", "hl": 0, "approx": 0}, {"name": "Hindu Cultural Society (Gravesend)", "area": "Gravesend", "region": "South East", "county": "Kent", "lat": 51.4412, "lng": 0.3704, "addr": "10-12 Manor Rd, Gravesend DA12 1AA", "phone": "+44 7951 949363", "trad": "General", "note": "", "hl": 0, "approx": 0}, {"name": "Gloucester Pillaiyar (Hindu) Temple", "area": "Matson", "region": "South West", "county": "Gloucestershire", "lat": 51.8426, "lng": -2.2224, "addr": "1 Badminton Rd, Matson, Gloucester GL4 6AX", "phone": "+44 7852 825313", "trad": "Saiva", "note": "Ganesha-led temple with multiple deities.", "hl": 0, "approx": 0}, {"name": "Shree Ram Mandir", "area": "Walsall", "region": "West Midlands", "county": "West Midlands", "lat": 52.5732, "lng": -1.9957, "addr": "Ford St, Walsall WS2 9BW", "phone": "+44 1922 634462", "trad": "General", "note": "", "hl": 0, "approx": 0}, {"name": "Mandir Baba Balak Nath", "area": "Walsall", "region": "West Midlands", "county": "West Midlands", "lat": 52.5789, "lng": -1.9817, "addr": "96A Caldmore Rd, Walsall WS1 3PD", "phone": "", "trad": "General", "note": "The only Baba Balak Nath temple in the UK.", "hl": 0, "approx": 0}, {"name": "Shri Radha Krishna Temple", "area": "Telford", "region": "West Midlands", "county": "Shropshire", "lat": 52.6702, "lng": -2.4659, "addr": "20-22 Bank Rd, Telford TF4 2AZ", "phone": "", "trad": "General", "note": "The Hindu temple for Shropshire.", "hl": 0, "approx": 0}, {"name": "Sri Kanakadurkai Amman Temple", "area": "Longport", "region": "West Midlands", "county": "Staffordshire", "lat": 53.042, "lng": -2.2162, "addr": "Station St, Longport, Stoke-on-Trent ST6 4ND", "phone": "+44 7706 335324", "trad": "Saiva", "note": "Traditional Tamil temple.", "hl": 0, "approx": 0}, {"name": "Hindu Temple & Community Centre", "area": "Stoke-on-Trent", "region": "West Midlands", "county": "Staffordshire", "lat": 53.0307, "lng": -2.1659, "addr": "Bold St, Stoke-on-Trent ST1 6PD", "phone": "+44 1782 874030", "trad": "General", "note": "The first Hindu temple in Stoke-on-Trent.", "hl": 0, "approx": 0}, {"name": "ISKCON Stoke", "area": "Stoke-on-Trent", "region": "West Midlands", "county": "Staffordshire", "lat": 53.0145, "lng": -2.2102, "addr": "Victoria St, Stoke-on-Trent ST4 6EG", "phone": "+44 7827 219904", "trad": "ISKCON", "note": "", "hl": 0, "approx": 0}, {"name": "Hull & East Riding Hindu Cultural Association", "area": "Hull", "region": "Yorkshire and the Humber", "county": "East Riding of Yorkshire", "lat": 53.7438, "lng": -0.3517, "addr": "7 Park St, Hull HU3 2JF", "phone": "+44 7845 458792", "trad": "General", "note": "The Hindu temple serving Hull.", "hl": 0, "approx": 0}, {"name": "Huddersfield Hindu Temple", "area": "Huddersfield", "region": "Yorkshire and the Humber", "county": "West Yorkshire", "lat": 53.6448, "lng": -1.7792, "addr": "20 Zetland St, Huddersfield HD1 2RA", "phone": "", "trad": "General", "note": "The only Hindu temple in Huddersfield.", "hl": 0, "approx": 0}, {"name": "Shiva Temple Manchester", "area": "Stockport", "region": "North West", "county": "Greater Manchester", "lat": 53.4348, "lng": -2.1814, "addr": "5 Weybrook Rd, Stockport M19 2QD", "phone": "+44 7765 451000", "trad": "Saiva", "note": "South Indian Shiva temple.", "hl": 0, "approx": 0}, {"name": "Hindu Cultural Society", "area": "Middlesbrough", "region": "North East", "county": "North Yorkshire", "lat": 54.5695, "lng": -1.2131, "addr": "54 Westbourne Grove, North Ormesby, Middlesbrough TS3 6EF", "phone": "+44 1642 218428", "trad": "General", "note": "Serves the Teesside Hindu community.", "hl": 0, "approx": 0}, {"name": "Middlesbrough Thiru Murugan Temple", "area": "Middlesbrough", "region": "North East", "county": "North Yorkshire", "lat": 54.5706, "lng": -1.2508, "addr": "6 Lorne St, Middlesbrough TS1 5QY", "phone": "+44 7956 770506", "trad": "Saiva", "note": "Tamil Murugan temple.", "hl": 0, "approx": 0}, {"name": "Wales Hanuman Temple", "area": "Port Talbot", "region": "Wales", "county": "Neath Port Talbot", "lat": 51.5993, "lng": -3.7769, "addr": "10 Jersey St, Port Talbot SA13 1YR", "phone": "+44 1639 885232", "trad": "General", "note": "Hanuman temple serving the Swansea and Port Talbot area.", "hl": 0, "approx": 0}, {"name": "Pashupatinath Temple", "area": "Paisley", "region": "Scotland", "county": "Renfrewshire", "lat": 55.8568, "lng": -4.4071, "addr": "1 Priory Ave, Paisley PA34 4NS", "phone": "+44 7442 901108", "trad": "General", "note": "Shiva temple.", "hl": 0, "approx": 0}];
+const T = RAW.map((r,i)=>Object.assign({id:i},r));
+
+const TRAD = {
+  BAPS:        {label:"BAPS Swaminarayan",   color:"#C29A2B"},
+  ISKCON:      {label:"ISKCON / Vaishnava",  color:"#2E4A6B"},
+  Saiva:       {label:"Saiva / Tamil",       color:"#C2362B"},
+  Swaminarayan:{label:"Swaminarayan (other)",color:"#C56A2A"},
+  General:     {label:"Sanatan / community", color:"#0F6E6A"}
+};
+const REGION_ORDER = ["London","South East","South West","East of England","East Midlands","West Midlands","Yorkshire and the Humber","North West","North East","Scotland","Wales","Northern Ireland"];
+const regionRank = r => {const i=REGION_ORDER.indexOf(r);return i<0?99:i;};
+
+/* de-stack temples sharing an exact coordinate so pins stay separately clickable */
+(function(){
+  const g={};
+  T.forEach(t=>{const k=t.lat.toFixed(4)+","+t.lng.toFixed(4);(g[k]=g[k]||[]).push(t);});
+  Object.values(g).forEach(a=>{
+    if(a.length===1){a[0].dlat=a[0].lat;a[0].dlng=a[0].lng;return;}
+    const n=a.length,rad=0.0016+0.0007*Math.min(n,8);
+    a.forEach((t,i)=>{const ang=2*Math.PI*i/n;
+      t.dlat=t.lat+rad*Math.sin(ang);
+      t.dlng=t.lng+rad*Math.cos(ang)/Math.cos(t.lat*Math.PI/180);});
+  });
+})();
+
+/* ---------- map ---------- */
+const map = L.map('map',{zoomControl:true,attributionControl:true}).setView([54.2,-2.6],6);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{
+  attribution:'&copy; OpenStreetMap &copy; CARTO',subdomains:'abcd',maxZoom:19
+}).addTo(map);
+
+function markerHTML(t,size){
+  const c=(TRAD[t.trad]||TRAD.General).color;
+  const cls='tmarker'+(t.hl?' feat':'');
+  return L.divIcon({className:'',html:`<div class="${cls}" style="width:${size}px;height:${size}px;background:${c}"></div>`,iconSize:[size,size],iconAnchor:[size/2,size/2]});
+}
+const markers={};
+T.forEach(t=>{
+  const m=L.marker([t.dlat,t.dlng],{icon:markerHTML(t,t.hl?17:13)}).addTo(map);
+  m.bindPopup(popupHTML(t),{maxWidth:260});
+  m.on('click',()=>{highlightCard(t.id);});
+  markers[t.id]=m;
+});
+
+function gmaps(t){return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(t.name+', '+t.addr)}`;}
+function dirLink(t){return `https://www.google.com/maps/dir/?api=1&destination=${t.lat},${t.lng}`;}
+function popupHTML(t){
+  const loc=[t.area,t.region].filter(Boolean).join(' · ');
+  return `<div><p class="pop-name">${t.name}${t.hl?' ★':''}</p>
+    <p class="pop-loc">${loc}${t.approx?' · approx. location':''}</p>
+    <p class="pop-addr">${t.addr}</p>
+    <div class="pop-links"><a href="${dirLink(t)}" target="_blank" rel="noopener">Directions →</a>
+    ${t.phone?`<a href="tel:${t.phone.replace(/\s/g,'')}">Call</a>`:''}</div></div>`;
+}
+
+/* ---------- state & filters ---------- */
+let user=null,userMarker=null,pinMode=false;
+const el=id=>document.getElementById(id);
+
+function haversine(a,b,c,d){const R=3958.8,r=Math.PI/180;
+  const x=Math.sin((c-a)*r/2)**2+Math.cos(a*r)*Math.cos(c*r)*Math.sin((d-b)*r/2)**2;
+  return R*2*Math.asin(Math.sqrt(x));}
+
+// populate region + tradition selects
+REGION_ORDER.filter(r=>T.some(t=>t.region===r)).forEach(r=>{
+  el('fRegion').insertAdjacentHTML('beforeend',`<option>${r}</option>`);});
+Object.keys(TRAD).forEach(k=>{
+  el('fTrad').insertAdjacentHTML('beforeend',`<option value="${k}">${TRAD[k].label}</option>`);});
+// legend
+el('legendRows').innerHTML=Object.keys(TRAD).map(k=>
+  `<div class="row"><span class="swatch" style="background:${TRAD[k].color}"></span>${TRAD[k].label}</div>`).join('');
+
+function refreshCounties(){
+  const reg=el('fRegion').value;
+  const set=[...new Set(T.filter(t=>!reg||t.region===reg).map(t=>t.county))].sort();
+  el('fCounty').innerHTML='<option value="">All counties</option>'+set.map(c=>`<option>${c}</option>`).join('');
+}
+refreshCounties();
+
+function currentList(){
+  const reg=el('fRegion').value,cty=el('fCounty').value,tr=el('fTrad').value,nm=el('fName').value.trim().toLowerCase();
+  let a=T.filter(t=>(!reg||t.region===reg)&&(!cty||t.county===cty)&&(!tr||t.trad===tr)&&(!nm||t.name.toLowerCase().includes(nm)||t.area.toLowerCase().includes(nm)));
+  if(user){a.forEach(t=>t.dist=haversine(user.lat,user.lng,t.lat,t.lng));a.sort((x,y)=>x.dist-y.dist);}
+  else{a.sort((x,y)=>regionRank(x.region)-regionRank(y.region)||x.county.localeCompare(y.county)||x.name.localeCompare(y.name));}
+  return a;
+}
+
+function render(){
+  const a=currentList();
+  el('count').innerHTML=`<b>${a.length}</b> temple${a.length!==1?'s':''}`+(user?' · nearest first':'');
+  const list=el('list');
+  if(!a.length){list.innerHTML=`<div class="empty"><div class="big">No temples match</div>Try widening the region or clearing the name search.</div>`;
+    for(const id in markers)markers[id].setOpacity(.25);return;}
+  const shown=new Set(a.map(t=>t.id));
+  for(const id in markers)markers[id].setOpacity(shown.has(+id)?1:.2);
+  list.innerHTML=a.map(t=>{
+    const c=(TRAD[t.trad]||TRAD.General).color;
+    const loc=[t.area,t.region].filter(Boolean).join(' · ');
+    const dist=(user&&t.dist!=null)?`<span class="c-dist">${t.dist<0.1?'here':t.dist.toFixed(1)+' mi'}</span>`:'';
+    return `<div class="card${t.hl?' feat':''}" style="--dot:${c}" data-id="${t.id}">
+      <div class="c-top"><h3 class="c-name">${t.name}${t.hl?' ★':''}</h3>${dist}</div>
+      <p class="c-loc">${loc}${t.approx?' · <i>approx. location</i>':''}</p>
+      <p class="c-addr">${t.addr}</p>
+      <div class="chips">
+        <span class="chip"><span class="swatch" style="background:${c}"></span>${(TRAD[t.trad]||TRAD.General).label}</span>
+        ${t.hl?'<span class="chip feat">★ Featured</span>':''}
+      </div>
+      ${t.note?`<p class="c-note">${t.note}</p>`:''}
+      <div class="c-links"><a href="${dirLink(t)}" target="_blank" rel="noopener">Directions →</a>
+      ${t.phone?`<a href="tel:${t.phone.replace(/\s/g,'')}">Call</a>`:''}</div>
+    </div>`;}).join('');
+  [...list.querySelectorAll('.card')].forEach(card=>{
+    card.addEventListener('click',e=>{if(e.target.closest('a'))return;
+      const id=+card.dataset.id,t=T.find(x=>x.id===id);
+      map.flyTo([t.dlat,t.dlng],14,{duration:.6});markers[id].openPopup();});
+  });
+}
+
+function highlightCard(id){
+  const card=el('list').querySelector(`.card[data-id="${id}"]`);
+  if(card){card.scrollIntoView({behavior:'smooth',block:'center'});
+    card.style.borderColor='var(--saffron)';setTimeout(()=>card.style.borderColor='',1200);}
+}
+
+/* ---------- geocoding ---------- */
+async function geocode(){
+  const raw=el('pc').value.trim();if(!raw){setHint('Enter a UK postcode to find your nearest temple.');return;}
+  const pc=raw.toUpperCase().replace(/\s+/g,'');
+  setHint('Looking up postcode…');
+  try{
+    let r=await fetch(`https://api.postcodes.io/postcodes/${encodeURIComponent(pc)}`);
+    let j=await r.json();
+    if(j.status===200){return setUser(j.result.latitude,j.result.longitude,`Nearest to <b>${j.result.postcode}</b>`);}
+    // fallback: outward code
+    const out=pc.replace(/\d[A-Z]{2}$/,'');
+    r=await fetch(`https://api.postcodes.io/outcodes/${encodeURIComponent(out)}`);j=await r.json();
+    if(j.status===200){return setUser(j.result.latitude,j.result.longitude,`Approximate area <b>${j.result.outcode}</b> (full postcode not found)`);}
+    setHint('<span class="err">Postcode not recognised.</span> Check it, or drop a pin on the map instead.');
+  }catch(e){setHint('<span class="err">Couldn\'t reach the postcode service.</span> Try dropping a pin on the map.');}
+}
+function setUser(lat,lng,msg){
+  user={lat,lng};
+  if(userMarker)userMarker.remove();
+  userMarker=L.marker([lat,lng],{icon:L.divIcon({className:'',html:'<div class="you-dot you-pulse" style="width:15px;height:15px"></div>',iconSize:[15,15],iconAnchor:[7.5,7.5]}),zIndexOffset:1000}).addTo(map);
+  render();
+  const a=currentList();
+  if(a.length){const n=a[0];setHint(`${msg} — closest is <b>${n.name}</b>, ${n.dist.toFixed(1)} mi away.`);
+    map.flyTo([n.dlat,n.dlng],11,{duration:.7});setTimeout(()=>markers[n.id].openPopup(),700);}
+  else setHint(msg+' — but no temples match your current filters.');
+}
+function setHint(h){el('hint').innerHTML=h;}
+
+/* ---------- events ---------- */
+el('go').onclick=geocode;
+el('pc').addEventListener('keydown',e=>{if(e.key==='Enter')geocode();});
+el('geo').onclick=()=>{
+  if(!navigator.geolocation){setHint('Location isn\'t available in this browser.');return;}
+  setHint('Getting your location…');
+  navigator.geolocation.getCurrentPosition(
+    p=>setUser(p.coords.latitude,p.coords.longitude,'Nearest to <b>your location</b>'),
+    ()=>setHint('<span class="err">Location permission denied.</span> Enter a postcode or drop a pin instead.'),
+    {enableHighAccuracy:true,timeout:8000});
+};
+el('pin').onclick=()=>{pinMode=!pinMode;
+  el('pin').style.background=pinMode?'var(--saffron)':'';el('pin').style.color=pinMode?'#fff':'';
+  setHint(pinMode?'Tap anywhere on the map to set your location.':'Pin mode off.');};
+map.on('click',e=>{if(!pinMode)return;pinMode=false;el('pin').style.background='';el('pin').style.color='';
+  setUser(e.latlng.lat,e.latlng.lng,'Nearest to <b>your pin</b>');});
+
+el('fRegion').onchange=()=>{refreshCounties();render();};
+el('fCounty').onchange=render;
+el('fTrad').onchange=render;
+el('fName').addEventListener('input',render);
+el('clear').onclick=()=>{
+  el('fRegion').value='';el('fCounty').value='';el('fTrad').value='';el('fName').value='';refreshCounties();
+  user=null;if(userMarker){userMarker.remove();userMarker=null;}el('pc').value='';
+  setHint('Filters and location cleared. Enter a postcode to rank by distance.');
+  map.flyTo([54.2,-2.6],6,{duration:.6});render();};
+
+el('aboutBtn').onclick=()=>el('aboutModal').classList.add('open');
+el('aboutClose').onclick=()=>el('aboutModal').classList.remove('open');
+el('aboutModal').addEventListener('click',e=>{if(e.target===el('aboutModal'))el('aboutModal').classList.remove('open');});
+
+render();
+</script>
+</body>
+</html>
