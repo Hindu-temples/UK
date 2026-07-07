@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://hindu-temples.uk/sitemap.xml
