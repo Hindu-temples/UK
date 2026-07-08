@@ -1,0 +1,15 @@
+{
+ "name": "Hindu Temples UK",
+ "short_name": "Temples UK",
+ "start_url": "/",
+ "display": "browser",
+ "background_color": "#FAF6EE",
+ "theme_color": "#BE3524",
+ "icons": [
+  {
+   "src": "favicon.svg",
+   "sizes": "any",
+   "type": "image/svg+xml"
+  }
+ ]
+}

@@ -1,102 +1,146 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-GB">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<title>UK Hindu Temple Finder — hindu-temples.uk</title>
-<meta name="description" content="Find your nearest Hindu temple in the UK by postcode, or browse every mandir by region and tradition. An interactive map of 150+ verified temples."/>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>UK Hindu Temples — Interactive Map &amp; Directory of 151 Mandirs</title>
+<meta name="description" content="Find your nearest Hindu temple by postcode. An interactive map and complete directory of 151 verified mandirs across England, Scotland, Wales and Northern Ireland — with addresses, traditions, opening hours and directions."/>
+<link rel="canonical" href="https://hindu-temples.uk/"/>
+<meta name="theme-color" content="#FAF6EE"/>
+<meta property="og:type" content="website"/>
+<meta property="og:site_name" content="Hindu Temples UK"/>
+<meta property="og:title" content="UK Hindu Temples — Interactive Map &amp; Directory of 151 Mandirs"/>
+<meta property="og:description" content="Find your nearest Hindu temple by postcode. An interactive map and complete directory of 151 verified mandirs across England, Scotland, Wales and Northern Ireland — with addresses, traditions, opening hours and directions."/>
+<meta property="og:url" content="https://hindu-temples.uk/"/>
+<meta property="og:image" content="https://hindu-temples.uk/og-image.png"/><meta name="twitter:card" content="summary_large_image"/>
+<link rel="icon" type="image/svg+xml" href="favicon.svg"/>
+<link rel="apple-touch-icon" href="apple-touch-icon.png"/>
+<link rel="manifest" href="site.webmanifest"/>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://a.basemaps.cartocdn.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css"/>
-<link rel="canonical" href="https://hindu-temples.uk/"/>
-<meta property="og:type" content="website"/>
-<meta property="og:title" content="UK Hindu Temple Finder — Find Your Nearest Mandir"/>
-<meta property="og:description" content="Search 150+ Hindu temples across the UK by postcode. Browse by region, county and tradition on an interactive map."/>
-<meta property="og:url" content="https://hindu-temples.uk/"/>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Hindu Temples UK","url":"https://hindu-temples.uk/","description":"An interactive directory of Hindu temples and mandirs across the United Kingdom."}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"hindu-temples.uk","url":"https://hindu-temples.uk/"}</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<link rel="stylesheet" href="site.css"/>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Hindu Temples UK","url":"https://hindu-temples.uk/","description":"Interactive map and directory of Hindu temples across the United Kingdom.","potentialAction":{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"https://hindu-temples.uk/?postcode={postcode}"},"query-input":"required name=postcode"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"Hindu Temples UK","url":"https://hindu-temples.uk/","logo":"https://hindu-temples.uk/favicon.svg","email":"hindu.temples.uk@gmail.com"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How many Hindu temples are there in the UK?","acceptedAnswer":{"@type":"Answer","text":"This directory lists 151 verified Hindu temples and mandirs across England, Scotland, Wales and Northern Ireland, each checked against a real street address. National bodies such as the National Council of Hindu Temples UK estimate several hundred places of Hindu worship in total once smaller community shrines and home gatherings are included."}},{"@type":"Question","name":"Which UK city has the most Hindu temples?","acceptedAnswer":{"@type":"Answer","text":"London has by far the most, with 37 temples listed across the capital. Leicester follows with 14, clustered around the Golden Mile on Belgrave Road — home to one of the largest Diwali celebrations outside India."}},{"@type":"Question","name":"What is the largest Hindu temple in the UK?","acceptedAnswer":{"@type":"Answer","text":"The BAPS Shri Swaminarayan Mandir in Neasden, London — opened in 1995 — was Europe’s first traditional stone mandir and remains the best known. The Shri Venkateswara (Balaji) Temple in Tividale, near Birmingham, is among the largest Hindu temple complexes in Europe."}},{"@type":"Question","name":"How do I find my nearest Hindu temple?","acceptedAnswer":{"@type":"Answer","text":"Type your postcode into the search box at the top of this page. The map ranks every temple by distance, draws sightlines to the four nearest, and gives you one-tap directions, phone numbers and websites where available."}},{"@type":"Question","name":"Are temple opening times listed?","acceptedAnswer":{"@type":"Answer","text":"Opening hours are shown where they have been verified, and more are added as temples confirm them. Times can change for festivals and private events, so it’s always worth checking with the temple before travelling."}},{"@type":"Question","name":"A temple is missing or has closed — how do I report it?","acceptedAnswer":{"@type":"Answer","text":"Email hindu.temples.uk@gmail.com with the temple’s name and address and what needs changing. Every submission is checked before the map is updated — see how this directory is maintained."}}]}</script>
+<!-- analytics: paste your snippet here -->
 </head>
 <body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header"><div class="bar"><a class="brand" href="index.html"><svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#BE3524"/><path d="M32 8 L44 38 H20 Z" fill="#FBF3E4"/><rect x="16" y="38" width="32" height="12" fill="#FBF3E4"/><rect x="28" y="41" width="8" height="9" fill="#BE3524"/><circle cx="32" cy="6.5" r="2.5" fill="#E8A13A"/></svg><b>Hindu Temples UK</b></a><nav class="site-nav" aria-label="Main"><a href="index.html" aria-current="page">Find a temple</a><a href="directory.html">Directory</a><a href="temple-map.html">Temple map</a><a href="about.html">About</a></nav></div><div class="kalash"></div></header>
+<main id="main">
+<section class="hero wrap">
+  <p class="eyebrow">Sacred geography · United Kingdom</p>
+  <h1>Find your nearest Hindu temple</h1>
+  <p class="lede">From the hand-carved marble of Neasden to the Tamil kovils of Croydon and the ISKCON estate at Bhaktivedanta Manor — this directory maps <b>151 verified Hindu temples and mandirs</b> across England, Scotland, Wales and Northern Ireland. Search by postcode, or browse by region and tradition.</p>
+  <ul class="hero-stats">
+    <li><b>151</b>temples verified</li>
+    <li><b>12</b>regions covered</li>
+    <li><b>5</b>traditions mapped</li>
+  </ul>
+</section>
 
-<div class="app">
-  <aside class="panel">
-    <div class="head">
-      <p class="kicker">Sacred geography · United Kingdom</p>
-      <h1 class="title">Hindu Temple Finder<small>Find your nearest mandir by postcode, or browse every temple by region and tradition.</small></h1>
-      <nav class="head-links"><a href="directory.html">Browse by city</a><a href="map-comparison.html">Temples vs mosques map</a></nav>
+<section class="finder wrap" aria-label="Temple finder">
+  <div class="search-card">
+    <div class="search-row">
+      <div class="field">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21s-7-6.4-7-11a7 7 0 1114 0c0 4.6-7 11-7 11z" stroke="#BE3524" stroke-width="1.6"/><circle cx="12" cy="10" r="2.4" stroke="#BE3524" stroke-width="1.6"/></svg>
+        <input id="pc" type="text" inputmode="text" autocomplete="postal-code" placeholder="Enter a postcode (e.g. LE1 6EJ)" aria-label="Postcode" spellcheck="false"/>
+      </div>
+      <button class="btn btn-primary" id="go">Find</button>
     </div>
-
-    <div class="controls">
-      <div class="pc-row">
-        <div class="field">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-6.4-7-11a7 7 0 1114 0c0 4.6-7 11-7 11z" stroke="%23C2362B" stroke-width="1.6"/><circle cx="12" cy="10" r="2.4" stroke="%23C2362B" stroke-width="1.6"/></svg>
-          <input id="pc" type="text" placeholder="Enter a postcode (e.g. LE1 6EJ)" autocomplete="off" spellcheck="false"/>
-        </div>
-        <button class="btn btn-go" id="go">Find</button>
-      </div>
-      <div class="mini">
-        <button class="btn btn-ghost" id="geo">◎ Use my location</button>
-        <button class="btn btn-ghost" id="pin">✛ Drop a pin on the map</button>
-      </div>
-      <div class="hint" id="hint">Nearest temples are ranked by straight-line distance from your postcode.</div>
-
-      <div class="filters">
-        <div class="sel"><label>Region</label>
-          <select id="fRegion"><option value="">All regions</option></select></div>
-        <div class="sel"><label>County / borough</label>
-          <select id="fCounty"><option value="">All counties</option></select></div>
-        <div class="sel"><label>Tradition</label>
-          <select id="fTrad"><option value="">All traditions</option></select></div>
-        <div class="sel"><label>Search by name</label>
-          <select style="display:none"></select>
-          <div class="field" style="padding:0 8px"><input id="fName" type="text" placeholder="Temple name…" autocomplete="off" style="font-family:var(--sans);letter-spacing:0;padding:8px 0;font-size:13.5px"></div>
-        </div>
-      </div>
+    <div class="search-aux">
+      <button class="btn btn-ghost btn-sm" id="geo">◎ Use my location</button>
+      <button class="btn btn-ghost btn-sm" id="pin" aria-pressed="false">✛ Drop a pin</button>
     </div>
-
-    <div class="report-cta">
-        <span>Missing temple, a closure, wrong details — or just want to get in touch?</span>
-        <button id="reportBtn">Report or add a temple →</button>
-      </div>
-    <div class="results-head">
-      <span class="count" id="count"></span>
-      <button class="clearall" id="clear">Clear filters &amp; location</button>
+    <p class="hint" id="hint" role="status" aria-live="polite">Nearest temples are ranked by straight-line distance from your postcode.</p>
+    <div class="filters">
+      <div class="sel"><label for="fRegion">Region</label>
+        <select id="fRegion"><option value="">All regions</option></select></div>
+      <div class="sel"><label for="fCounty">County / borough</label>
+        <select id="fCounty"><option value="">All counties</option></select></div>
+      <div class="sel"><label for="fTrad">Tradition</label>
+        <select id="fTrad"><option value="">All traditions</option></select></div>
+      <div class="sel"><label for="fName">Search by name</label>
+        <div class="field" style="min-height:42px"><input id="fName" type="search" placeholder="Temple name…" style="font-family:var(--font-body);font-size:15px;padding:9px 0"/></div></div>
     </div>
-    <div class="list" id="list"></div>
-  </aside>
+    <p class="report-line">Missing temple or wrong details? <a href="mailto:hindu.temples.uk@gmail.com?subject=Temple%20submission%20%E2%80%93%20hindu-temples.uk&amp;body=Temple%20name%3A%0AAddress%20%2F%20postcode%3A%0AWhat%27s%20new%2C%20closed%2C%20or%20wrong%3A%0AOpening%20hours%20(if%20known)%3A%0AWebsite%20%2F%20social%20links%3A%0A">Report it →</a></p>
+  </div>
 
   <div class="map-wrap">
-    <div id="map"></div>
-    <button class="about-toggle" id="aboutBtn">About this data</button>
+    <div id="map" role="application" aria-label="Map of Hindu temples in the UK"></div>
+    <p class="map-status" id="mapStatus">Loading 151 temples…</p>
     <div class="legend collapsed" id="legend">
-      <button class="legend-h" id="legendToggle">Key <span class="caret">▾</span></button>
-      <div class="legend-body">
-        <div id="legendRows"></div>
-        <div class="row"><span class="swatch ring" style="background:var(--vermilion)"></span>Featured</div>
-      </div>
+      <button class="legend-h" id="legendToggle" aria-expanded="false" aria-controls="legendRows">Key <span class="caret">▾</span></button>
+      <div class="legend-body" id="legendRows"></div>
     </div>
   </div>
-</div>
 
-<div class="modal" id="aboutModal">
-  <div class="modal-card">
-    <div class="m-head">
-      <h3>About this data</h3>
-      <button class="close" id="aboutClose">×</button>
+  <div class="results-block">
+    <div class="results-head">
+      <span class="count" id="count" role="status" aria-live="polite"></span>
+      <button class="linklike" id="clear">Clear filters &amp; location</button>
     </div>
-    <div class="body">
-      <p>This directory merges two independent research passes (one from Gemini, one from ChatGPT) and then verifies every entry against <b>Google Places</b> — so temple names, street addresses and map coordinates reflect the actual buildings, not town-centre approximations.</p>
-      <p>That verification does three things at once: it pins each temple to its real location, it separates temples that the source lists had stacked on a single city coordinate, and it filters out entries that turned out not to be Hindu temples (or, in one case, a temple in Alabama).</p>
-      <p>A small number of well-known temples that didn't return a clean Places match are included at <b>approximate locations</b> and labelled as such on their card.</p>
-      <p><b>Distances</b> are straight-line (as-the-crow-flies) from your postcode, meant for ranking rather than routing — tap <b>Directions</b> on any temple for a real driving route.</p>
-      <p>Coverage is broad but not exhaustive; national bodies list several hundred places of worship, and community temples open and move. Use the <b>Report or add a temple</b> button to submit a new temple, a correction, a closure, or opening hours.</p>
+    <div class="results" id="results" aria-label="Temple results">
+      <div class="card skel" aria-hidden="true"></div>
+      <div class="card skel" aria-hidden="true"></div>
+      <div class="card skel" aria-hidden="true"></div>
     </div>
   </div>
-</div>
+</section>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-<script type="module" src="app.js"></script>
+<section class="section wrap" id="cities">
+  <div class="section-head">
+    <h2>Browse temples by city</h2>
+    <p class="section-sub">Every major Hindu community in Britain, from the capital to the Golden Mile — each city page lists its mandirs with addresses, traditions and directions.</p>
+  </div>
+  <div class="city-grid"><a class="city-card" href="london.html"><b>London</b><span>37 temples</span></a><a class="city-card" href="leicester.html"><b>Leicester</b><span>14 temples</span></a><a class="city-card" href="birmingham.html"><b>Birmingham</b><span>7 temples</span></a><a class="city-card" href="coventry.html"><b>Coventry</b><span>8 temples</span></a><a class="city-card" href="wolverhampton.html"><b>Wolverhampton</b><span>5 temples</span></a><a class="city-card" href="manchester.html"><b>Manchester</b><span>7 temples</span></a><a class="city-card" href="bolton.html"><b>Bolton</b><span>3 temples</span></a><a class="city-card" href="preston.html"><b>Preston</b><span>2 temples</span></a><a class="city-card" href="liverpool.html"><b>Liverpool</b><span>4 temples</span></a><a class="city-card" href="leeds.html"><b>Leeds</b><span>2 temples</span></a><a class="city-card" href="bradford.html"><b>Bradford</b><span>1 temple</span></a><a class="city-card" href="nottingham.html"><b>Nottingham</b><span>1 temple</span></a><a class="city-card" href="derby.html"><b>Derby</b><span>1 temple</span></a><a class="city-card" href="luton.html"><b>Luton</b><span>2 temples</span></a><a class="city-card" href="bedford.html"><b>Bedford</b><span>2 temples</span></a><a class="city-card" href="watford.html"><b>Watford</b><span>4 temples</span></a><a class="city-card" href="peterborough.html"><b>Peterborough</b><span>1 temple</span></a><a class="city-card" href="cardiff.html"><b>Cardiff</b><span>3 temples</span></a><a class="city-card" href="glasgow.html"><b>Glasgow</b><span>4 temples</span></a><a class="city-card" href="slough.html"><b>Slough</b><span>1 temple</span></a></div>
+</section>
+
+<section class="section wrap" id="featured">
+  <div class="section-head">
+    <h2>Landmark temples of the UK</h2>
+    <p class="section-sub">Six places that anchor Hindu life in Britain.</p>
+  </div>
+  <div class="feat-grid"><div class="feat-card"><h3>BAPS Shri Swaminarayan Mandir</h3><p class="where">Neasden · London</p><p>Europe&#x27;s first traditional stone mandir (1995), hand-carved in marble and limestone.</p><a href="london.html#t-0">View in London →</a></div><div class="feat-card"><h3>Shri Venkateswara (Balaji) Temple</h3><p class="where">Tividale · West Midlands</p><p>One of the largest Hindu temple complexes in Europe, in the South Indian style.</p><a href="birmingham.html#t-71">View in Birmingham →</a></div><div class="feat-card"><h3>Bhaktivedanta Manor</h3><p class="where">Aldenham · East of England</p><p>The ISKCON (Hare Krishna) estate donated by George Harrison in 1973.</p><a href="watford.html#t-38">View in Watford →</a></div><div class="feat-card"><h3>Bharat Hindu Samaj Mandir</h3><p class="where">Peterborough · East of England</p><p>Long the main mandir serving Peterborough and the surrounding area.</p><a href="peterborough.html#t-45">View in Peterborough →</a></div><div class="feat-card"><h3>Shree Sanatan Mandir</h3><p class="where">Leicester · East Midlands</p><p>A carved-limestone landmark serving Leicester&#x27;s Golden Mile community.</p><a href="leicester.html#t-54">View in Leicester →</a></div><div class="feat-card"><h3>Shree Ghanapathy Temple</h3><p class="where">Wimbledon · London</p><p>A leading South London Saiva temple, dedicated to Lord Ganesha.</p><a href="london.html#t-12">View in London →</a></div></div>
+</section>
+
+<section class="section wrap" id="faq">
+  <div class="section-head">
+    <h2>Common questions</h2>
+  </div>
+  <div class="faq"><details><summary>How many Hindu temples are there in the UK?</summary><p>This directory lists <b>151 verified Hindu temples and mandirs</b> across England, Scotland, Wales and Northern Ireland, each checked against a real street address. National bodies such as the National Council of Hindu Temples UK estimate several hundred places of Hindu worship in total once smaller community shrines and home gatherings are included.</p></details><details><summary>Which UK city has the most Hindu temples?</summary><p>London has by far the most, with <a href="london.html">37 temples listed</a> across the capital. <a href="leicester.html">Leicester</a> follows with 14, clustered around the Golden Mile on Belgrave Road — home to one of the largest Diwali celebrations outside India.</p></details><details><summary>What is the largest Hindu temple in the UK?</summary><p>The <b>BAPS Shri Swaminarayan Mandir in Neasden</b>, London — opened in 1995 — was Europe’s first traditional stone mandir and remains the best known. The <b>Shri Venkateswara (Balaji) Temple</b> in Tividale, near Birmingham, is among the largest Hindu temple complexes in Europe.</p></details><details><summary>How do I find my nearest Hindu temple?</summary><p>Type your postcode into the search box at the top of this page. The map ranks every temple by distance, draws sightlines to the four nearest, and gives you one-tap directions, phone numbers and websites where available.</p></details><details><summary>Are temple opening times listed?</summary><p>Opening hours are shown where they have been verified, and more are added as temples confirm them. Times can change for festivals and private events, so it’s always worth checking with the temple before travelling.</p></details><details><summary>A temple is missing or has closed — how do I report it?</summary><p>Email <a href="mailto:hindu.temples.uk@gmail.com?subject=Temple%20submission%20%E2%80%93%20hindu-temples.uk&amp;body=Temple%20name%3A%0AAddress%20%2F%20postcode%3A%0AWhat%27s%20new%2C%20closed%2C%20or%20wrong%3A%0AOpening%20hours%20(if%20known)%3A%0AWebsite%20%2F%20social%20links%3A%0A">hindu.temples.uk@gmail.com</a> with the temple’s name and address and what needs changing. Every submission is checked before the map is updated — see <a href="about.html">how this directory is maintained</a>.</p></details></div>
+</section>
+</main>
+<footer class="site-footer">
+  <div class="cols">
+    <div class="f-brand">
+      <b>Hindu Temples UK</b>
+      <p>A free, community-maintained directory of Hindu temples and mandirs across the United Kingdom — every listing verified against a real street address.</p>
+    </div>
+    <div>
+      <p class="f-h">Explore</p>
+      <ul class="f-links">
+        <li><a href="index.html">Find your nearest temple</a></li>
+        <li><a href="directory.html">Full A–Z directory</a></li>
+        <li><a href="temple-map.html">Map of every UK temple</a></li>
+        <li><a href="about.html">About &amp; data sources</a></li>
+        <li><a href="mailto:hindu.temples.uk@gmail.com?subject=Temple%20submission%20%E2%80%93%20hindu-temples.uk&amp;body=Temple%20name%3A%0AAddress%20%2F%20postcode%3A%0AWhat%27s%20new%2C%20closed%2C%20or%20wrong%3A%0AOpening%20hours%20(if%20known)%3A%0AWebsite%20%2F%20social%20links%3A%0A">Report or add a temple</a></li>
+      </ul>
+    </div>
+    <div>
+      <p class="f-h">Temples by city</p>
+      <p class="f-cities"><a href="london.html">London</a> · <a href="leicester.html">Leicester</a> · <a href="birmingham.html">Birmingham</a> · <a href="coventry.html">Coventry</a> · <a href="wolverhampton.html">Wolverhampton</a> · <a href="manchester.html">Manchester</a> · <a href="bolton.html">Bolton</a> · <a href="preston.html">Preston</a> · <a href="liverpool.html">Liverpool</a> · <a href="leeds.html">Leeds</a> · <a href="bradford.html">Bradford</a> · <a href="nottingham.html">Nottingham</a> · <a href="derby.html">Derby</a> · <a href="luton.html">Luton</a> · <a href="bedford.html">Bedford</a> · <a href="watford.html">Watford</a> · <a href="peterborough.html">Peterborough</a> · <a href="cardiff.html">Cardiff</a> · <a href="glasgow.html">Glasgow</a> · <a href="slough.html">Slough</a></p>
+    </div>
+  </div>
+  <div class="f-meta"><div class="in">
+    <span>© 2026 hindu-temples.uk · 151 temples · Updated 2026-07-08</span>
+    <span><a href="mailto:hindu.temples.uk@gmail.com?subject=Temple%20submission%20%E2%80%93%20hindu-temples.uk&amp;body=Temple%20name%3A%0AAddress%20%2F%20postcode%3A%0AWhat%27s%20new%2C%20closed%2C%20or%20wrong%3A%0AOpening%20hours%20(if%20known)%3A%0AWebsite%20%2F%20social%20links%3A%0A">hindu.temples.uk@gmail.com</a></span>
+  </div></div>
+</footer>
 </body>
 </html>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" defer></script>
+<script src="app.js" defer></script>
