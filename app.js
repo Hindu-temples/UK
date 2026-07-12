@@ -137,10 +137,8 @@ function drawLines(list) {
   linesLayer.clearLayers();
   if (!state.user) return;
   list.slice(0, 4).forEach((t) => {
-    const d = t.dist ?? haversine(state.user.lat, state.user.lng, t.lat, t.lng);
     L.polyline([[state.user.lat, state.user.lng], [t.dlat, t.dlng]],
       { color: "#2E4A6B", weight: 2, opacity: 0.65, dashArray: "3 6" })
-      .bindTooltip(d.toFixed(1) + " mi", { permanent: true, direction: "center", className: "dist-tip" })
       .addTo(linesLayer);
     const rot = bearing(state.user.lat, state.user.lng, t.dlat, t.dlng);
     L.marker([t.dlat, t.dlng], { interactive: false, zIndexOffset: 400,
@@ -208,13 +206,11 @@ function applyParams(p) {
 function cardHTML(t) {
   const tr = TRAD[t.trad] || TRAD.General;
   const loc = [t.area, t.region].filter(Boolean).join(" · ");
-  const dist = state.user && t.dist != null
-    ? `<span class="c-dist">${t.dist < 0.1 ? "here" : t.dist.toFixed(1) + " mi"}</span>` : "";
   const closed = String(t.status || "").toLowerCase() === "closed"
     ? '<span class="chip closed">Closed</span>' : "";
   return `<article class="card${t.hl ? " feat" : ""}" style="--dot:${tr.color}" data-id="${t.id}"
       tabindex="0" role="button" aria-label="Show ${esc(t.name)} on the map">
-    <div class="c-top"><h3 class="c-name">${esc(t.name)}${t.hl ? " ★" : ""}</h3>${dist}</div>
+    <div class="c-top"><h3 class="c-name">${esc(t.name)}${t.hl ? " ★" : ""}</h3></div>
     <p class="c-loc">${esc(loc)}</p>
     <p class="c-addr">${esc(t.addr)}</p>
     ${t.hours ? `<p class="c-hours">Hours: ${esc(t.hours)}</p>` : ""}
@@ -234,8 +230,7 @@ function cardHTML(t) {
 function render() {
   if (!ready) return;
   const list = currentList();
-  $("count").innerHTML = `<b>${list.length}</b> temple${list.length === 1 ? "" : "s"}` +
-    (state.user ? " · nearest first" : "");
+  $("count").innerHTML = `<b>${list.length}</b> temple${list.length === 1 ? "" : "s"}`;
 
   const shown = new Set(list.map((t) => t.id));
   Object.entries(markersById).forEach(([id, m]) => m.setOpacity(shown.has(+id) ? 1 : 0.18));
@@ -314,7 +309,7 @@ function setUser(lat, lng, msg) {
   const list = currentList();
   if (list.length) {
     const n = list[0];
-    setHint(`${msg} — closest is <b>${esc(n.name)}</b>, ${n.dist.toFixed(1)} mi away.`);
+    setHint(`${msg} — lines point to your four nearest temples. Closest is <b>${esc(n.name)}</b>.`);
     map.flyTo([n.dlat, n.dlng], 11, { duration: 0.7 });
     setTimeout(() => markersById[n.id].openPopup(), 750);
   } else {

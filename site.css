@@ -149,7 +149,6 @@ select:focus-visible{outline:0;border-color:var(--saffron);box-shadow:0 0 0 3px 
 .card.feat::before{background:linear-gradient(180deg,var(--brass),var(--saffron))}
 .c-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
 .c-name{font-family:var(--font-display);font-weight:600;font-size:17.5px;line-height:1.15;margin:0;letter-spacing:-.005em}
-.c-dist{font-family:var(--font-mono);font-size:12.5px;color:var(--vermilion);white-space:nowrap;font-weight:500;padding-top:3px}
 .c-loc{font-size:13px;color:var(--ink-2);margin:4px 0 0}
 .c-addr{font-size:12.5px;color:var(--ink-3);margin:6px 0 0;line-height:1.4}
 .c-hours{font-size:12.5px;color:var(--ink-2);margin:6px 0 0}
@@ -194,9 +193,6 @@ select:focus-visible{outline:0;border-color:var(--saffron);box-shadow:0 0 0 3px 
 @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(46,74,107,.4)}70%{box-shadow:0 0 0 16px rgba(46,74,107,0)}100%{box-shadow:0 0 0 0 rgba(46,74,107,0)}}
 .arrowhead{width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;
   border-bottom:9px solid var(--indigo);filter:drop-shadow(0 1px 1px rgba(0,0,0,.35))}
-.leaflet-tooltip.dist-tip{background:rgba(255,255,255,.94);border:1px solid var(--line);border-radius:6px;
-  padding:0 6px;font-family:var(--font-mono);font-size:10.5px;color:var(--indigo);font-weight:500;box-shadow:none}
-.leaflet-tooltip.dist-tip::before{display:none}
 .leaflet-popup-content-wrapper{border-radius:var(--r-m);box-shadow:var(--shadow-2);border:1px solid var(--line)}
 .leaflet-popup-content{margin:13px 15px;font-family:var(--font-body)}
 .pop-name{font-family:var(--font-display);font-weight:600;font-size:16px;line-height:1.15;margin:0 0 3px}
