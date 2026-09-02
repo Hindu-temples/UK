@@ -278,7 +278,7 @@ __EXTRA__
 """, TITLE=e(title), DESC=e(desc), CANON=canon,
      ROBOTS='\n<meta name="robots" content="noindex,nofollow"/>' if noindex else "",
      OG=og,
-     TILES='<link rel="preconnect" href="https://a.basemaps.cartocdn.com"/>\n' if leaflet else "",
+     TILES='<link rel="preconnect" href="https://tile.openstreetmap.org"/>\n' if leaflet else "",
      LEAFLET='<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>\n' if leaflet else "",
      EXTRA=extra)
 
@@ -596,8 +596,10 @@ def build_directory():
             else:
                 link, rel = gdir(t), ' target="_blank" rel="noopener"'
             closed = ' <span class="tag closed">Closed</span>' if str(t.get("status","")).lower()=="closed" else ""
-            rows.append('<li><a href="%s"%s>%s</a> <span class="dloc">%s</span>%s</li>' %
-                        (link, rel, e(t["name"]), e(loc), closed))
+            site = ('  <a class="dsite" href="%s" target="_blank" rel="noopener">Website ↗</a>'
+                    % e(t["url"])) if t.get("url") else ""
+            rows.append('<li><a href="%s"%s>%s</a> <span class="dloc">%s</span>%s%s</li>' %
+                        (link, rel, e(t["name"]), e(loc), closed, site))
         secs.append('<section class="region-sec"><h2 id="%s">%s <span class="rn">%d temple%s</span></h2>'
                     '<ul class="dir">%s</ul></section>' %
                     (r.lower().replace(" ", "-"), e(r), len(ts), "" if len(ts)==1 else "s", "".join(rows)))
@@ -674,8 +676,8 @@ def build_temple_map():
 document.addEventListener('DOMContentLoaded',function(){
   var P=__PTS__;
   var m=L.map('bigmap',{scrollWheelZoom:false}).setView([54.5,-3.4],5);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png',
-    {subdomains:'abcd',maxZoom:12,attribution:'&copy; OpenStreetMap &copy; CARTO'}).addTo(m);
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+    {maxZoom:12,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(m);
   P.forEach(function(p){
     L.circleMarker([p.lat,p.lng],{radius:p.h?6:4,color:'#fff',weight:1,
       fillColor:p.h?'#BE3524':'#B8922F',fillOpacity:.88})

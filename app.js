@@ -56,8 +56,11 @@ async function init() {
 /* ---------------- map ---------------- */
 function buildMap() {
   map = L.map("map", { zoomControl: true }).setView(UK_VIEW.center, UK_VIEW.zoom);
-  L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
-    attribution: "&copy; OpenStreetMap &copy; CARTO", subdomains: "abcd", maxZoom: 19
+  /* OpenStreetMap standard tiles: free, no API key. CARTO began watermarking
+     keyless raster tiles on 28 Aug 2026, so we no longer use them. */
+  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    maxZoom: 19
   }).addTo(map);
   linesLayer = L.layerGroup().addTo(map);
   map.on("click", (e) => {
