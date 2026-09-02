@@ -346,3 +346,26 @@ ul.dir li a:hover{text-decoration:underline}
   html{scroll-behavior:auto}
   *,*::before,*::after{animation:none!important;transition:none!important}
 }
+
+/* ---------- festival dates (auto-expiring) ---------- */
+.fest-list{list-style:none;margin:16px 0 0;padding:0;display:grid;gap:2px}
+.fest-row{display:grid;grid-template-columns:150px 1fr;gap:14px;align-items:baseline;
+  padding:11px 2px;border-bottom:1px solid var(--line)}
+.fest-row:last-child{border-bottom:0}
+.fest-when{font-family:var(--font-mono);font-size:12.5px;color:var(--vermilion);font-weight:500;white-space:nowrap}
+.fest-what b{font-family:var(--font-display);font-size:16.5px;font-weight:600;letter-spacing:-.005em;display:block;line-height:1.25}
+.fest-meta{display:block;font-size:12.5px;color:var(--ink-2);margin-top:3px}
+.fest-note{display:block;font-size:12.5px;color:var(--ink-3);margin-top:4px;line-height:1.45;max-width:62ch}
+.fest-list.big .fest-row{padding:14px 2px}
+.fest-foot{margin:18px 0 0;font-size:13.5px;color:var(--ink-2)}
+.fest-foot a{font-weight:600}
+.t-fest{margin:11px 0 0;padding:11px 13px;background:var(--surface-2);border-radius:var(--r-s)}
+.t-fest-h{font-family:var(--font-mono);font-size:10px;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--ink-3);margin:0;font-weight:500}
+.t-fest .fest-list{margin-top:7px}
+.t-fest .fest-row{grid-template-columns:120px 1fr;gap:10px;padding:6px 0;border-color:var(--line-strong)}
+.t-fest .fest-what b{font-size:14.5px}
+@media (max-width:560px){
+  .fest-row,.t-fest .fest-row{grid-template-columns:1fr;gap:2px}
+  .fest-when{font-size:12px}
+}

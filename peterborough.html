@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="site.css"/>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"ItemList","name":"Hindu Temples in Peterborough","numberOfItems":1,"itemListElement":[{"@type":"ListItem","position":1,"item":{"@type":"HinduTemple","name":"Bharat Hindu Samaj Mandir","address":{"@type":"PostalAddress","streetAddress":"Unit 6, New England Complex, 11 Rock Rd, Peterborough PE1 3BU","addressLocality":"Peterborough","addressRegion":"Cambridgeshire","addressCountry":"GB"},"geo":{"@type":"GeoCoordinates","latitude":52.591,"longitude":-0.2504},"telephone":"+44 1733 315241"}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"ItemList","name":"Hindu Temples in Peterborough","numberOfItems":1,"itemListElement":[{"@type":"ListItem","position":1,"item":{"@type":"HinduTemple","name":"Bharat Hindu Samaj Mandir","address":{"@type":"PostalAddress","streetAddress":"Unit 6, New England Complex, 11 Rock Rd, Peterborough PE1 3BU","addressLocality":"Peterborough","addressRegion":"Cambridgeshire","addressCountry":"GB"},"geo":{"@type":"GeoCoordinates","latitude":52.591,"longitude":-0.2504},"telephone":"+44 1733 315241","url":"https://bharathindusamaj.co.uk/"}}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://hindu-temples.uk/"},{"@type":"ListItem","position":2,"name":"Directory","item":"https://hindu-temples.uk/directory.html"},{"@type":"ListItem","position":3,"name":"Peterborough","item":"https://hindu-temples.uk/peterborough.html"}]}</script>
 <!-- analytics: paste your snippet here -->
 </head>
@@ -35,7 +35,7 @@
     <p class="lede">Peterborough is served by the Bharat Hindu Samaj, long the city&#x27;s main Hindu temple.</p>
     <p><b>1 temple</b> listed in and around Peterborough. <a href="index.html?lat=52.5910&amp;lng=-0.2504&amp;z=12">Open Peterborough on the interactive map</a> to search by postcode and see them all at once.</p>
   </div>
-  <div class="tlist"><article class="temple" id="t-45"><h3>Bharat Hindu Samaj Mandir ★</h3><p class="t-sub"><span class="tag">Sanatan / community</span> Peterborough · Cambridgeshire</p><p class="t-addr">Unit 6, New England Complex, 11 Rock Rd, Peterborough PE1 3BU</p><p class="t-meta">Long the main Hindu temple serving Peterborough and the wider area; subject of a council sale dispute.</p><p class="t-links"><a href="https://www.google.com/maps/dir/?api=1&amp;destination=52.591,-0.2504" target="_blank" rel="noopener">Directions →</a> <a href="tel:+441733315241">+44 1733 315241</a></p></article></div>
+  <div class="tlist"><article class="temple" id="t-45"><h3>Bharat Hindu Samaj Mandir ★</h3><p class="t-sub"><span class="tag">Sanatan / community</span> Peterborough · Cambridgeshire</p><p class="t-addr">Unit 6, New England Complex, 11 Rock Rd, Peterborough PE1 3BU</p><p class="t-meta">Long the main Hindu temple serving Peterborough and the wider area; subject of a council sale dispute.</p><p class="t-links"><a href="https://www.google.com/maps/dir/?api=1&amp;destination=52.591,-0.2504" target="_blank" rel="noopener">Directions →</a> <a href="https://bharathindusamaj.co.uk/" target="_blank" rel="noopener">Website</a> <a href="tel:+441733315241">+44 1733 315241</a></p></article></div>
   <p class="backlink"><a href="directory.html">See every UK Hindu temple by region →</a></p>
 </div></main>
 <footer class="site-footer">
@@ -60,9 +60,21 @@
     </div>
   </div>
   <div class="f-meta"><div class="in">
-    <span>© 2026 hindu-temples.uk · 153 temples · Updated 2026-07-12</span>
+    <span>© 2026 hindu-temples.uk · 154 temples · Updated 2026-09-02</span>
     <span><a href="mailto:hindu.temples.uk@gmail.com?subject=Temple%20submission%20%E2%80%93%20hindu-temples.uk&amp;body=Temple%20name%3A%0AAddress%20%2F%20postcode%3A%0AWhat%27s%20new%2C%20closed%2C%20or%20wrong%3A%0AOpening%20hours%20(if%20known)%3A%0AWebsite%20%2F%20social%20links%3A%0A">hindu.temples.uk@gmail.com</a></span>
   </div></div>
 </footer>
+<script>
+/* Dates remove themselves once passed, so nothing stale shows between rebuilds. */
+(function(){
+  var t=new Date(),today=t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0');
+  document.querySelectorAll('[data-until]').forEach(function(el){
+    if(el.getAttribute('data-until')<today) el.remove();
+  });
+  document.querySelectorAll('[data-festblock]').forEach(function(b){
+    if(!b.querySelector('[data-until]')) b.remove();
+  });
+})();
+</script>
 </body>
 </html>

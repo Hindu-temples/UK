@@ -120,6 +120,54 @@ def load_from_xlsx(path):
         for n, nm in skipped: print("  row %d: %s" % (n, nm))
     return out
 
+def load_festivals():
+    """Read the Festivals sheet. Past dates are dropped at build time; the browser
+    drops any that expire between rebuilds (see EXPIRY_JS)."""
+    if not os.path.exists("temples.xlsx"): return []
+    try:
+        from openpyxl import load_workbook
+    except ImportError:
+        return []
+    wb = load_workbook("temples.xlsx", data_only=True)
+    if "Festivals" not in wb.sheetnames: return []
+    ws = wb["Festivals"]
+    rows = list(ws.iter_rows(values_only=True))
+    if not rows: return []
+    hdr = [s(h) for h in rows[0]]
+    ix = {k: (hdr.index(k) if k in hdr else None)
+          for k in ["Date","End date","Festival","Temple Name","Area","Time","Details","Source","Checked"]}
+    def cell(row, k):
+        i = ix[k]
+        v = row[i] if i is not None and i < len(row) else None
+        if hasattr(v, "strftime"): return v.strftime("%Y-%m-%d")
+        return s(v)
+    out = []
+    for row in rows[1:]:
+        d = cell(row, "Date"); f = cell(row, "Festival")
+        if not d or not f: continue
+        end = cell(row, "End date") or d
+        if end < TODAY: continue                      # build-time expiry
+        out.append({"date": d, "end": end, "fest": f,
+                    "temple": cell(row, "Temple Name"), "area": cell(row, "Area"),
+                    "time": cell(row, "Time"), "details": cell(row, "Details"),
+                    "source": cell(row, "Source")})
+    out.sort(key=lambda x: x["date"])
+    return out
+
+def pretty_date(iso, end=None):
+    import datetime as _dt
+    try: a = _dt.date.fromisoformat(iso)
+    except ValueError: return iso
+    fmt = lambda x: "%d %s %d" % (x.day, x.strftime("%B"), x.year)
+    if end and end != iso:
+        try:
+            b = _dt.date.fromisoformat(end)
+            if b.month == a.month:
+                return "%d\u2013%d %s %d" % (a.day, b.day, a.strftime("%B"), a.year)
+            return "%s \u2013 %s" % (fmt(a), fmt(b))
+        except ValueError: pass
+    return fmt(a)
+
 def load_data():
     if os.path.exists("temples.xlsx"):
         try:
@@ -157,6 +205,15 @@ for t in T:
     if t["_city"]: BY_CITY[t["_city"]].append(t)
 for slug in BY_CITY:
     BY_CITY[slug].sort(key=lambda x: (0 if x.get("hl") else 1, x["name"]))
+
+FEST = load_festivals()
+FEST_NATIONAL = [f for f in FEST if not f["temple"]]
+FEST_BY_TEMPLE = {}
+for _f in FEST:
+    if _f["temple"]:
+        FEST_BY_TEMPLE.setdefault((_f["temple"].lower(), _f["area"].lower()), []).append(_f)
+print("festivals: %d upcoming (%d national, %d temple-specific)" % (
+    len(FEST), len(FEST_NATIONAL), len(FEST) - len(FEST_NATIONAL)))
 
 N = len(T)
 N_LON = len(BY_CITY["london"]); N_LEI = len(BY_CITY["leicester"])
@@ -268,6 +325,7 @@ def footer_html():
     <span><a href="__MAILTO__">__EMAIL__</a></span>
   </div></div>
 </footer>
+""" + EXPIRY_JS + """
 </body>
 </html>""", MAILTO=MAILTO, CITIES=cities, YEAR=TODAY[:4], N=str(N), TODAY=TODAY, EMAIL=EMAIL)
 
@@ -283,10 +341,11 @@ def temple_article(t):
     return ('<article class="temple" id="t-%d">'
             '<h3>%s%s</h3>'
             '<p class="t-sub"><span class="tag">%s</span> %s%s</p>'
-            '<p class="t-addr">%s</p>%s'
+            '<p class="t-addr">%s</p>%s%s'
             '<p class="t-links">%s</p></article>' % (
         t["id"], e(t["name"]), " ★" if t.get("hl") else "",
-        e(TRAD_LABEL.get(t["trad"], t["trad"])), e(loc), closed, e(t["addr"]), meta, " ".join(links)))
+        e(TRAD_LABEL.get(t["trad"], t["trad"])), e(loc), closed, e(t["addr"]), meta,
+        temple_fest_html(t), " ".join(links)))
 
 def ld_place(t, compact=False):
     p = {"@type": "HinduTemple", "name": t["name"],
@@ -308,6 +367,39 @@ def ld_breadcrumb(trail):
     return {"@context": "https://schema.org", "@type": "BreadcrumbList",
             "itemListElement": [{"@type": "ListItem", "position": i+1, "name": n, "item": BASE + "/" + u}
                                 for i, (n, u) in enumerate(trail)]}
+
+EXPIRY_JS = """<script>
+/* Dates remove themselves once passed, so nothing stale shows between rebuilds. */
+(function(){
+  var t=new Date(),today=t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0');
+  document.querySelectorAll('[data-until]').forEach(function(el){
+    if(el.getAttribute('data-until')<today) el.remove();
+  });
+  document.querySelectorAll('[data-festblock]').forEach(function(b){
+    if(!b.querySelector('[data-until]')) b.remove();
+  });
+})();
+</script>"""
+
+def fest_rows_html(items):
+    out = []
+    for f in items:
+        meta = []
+        if f["time"]: meta.append(e(f["time"]))
+        if f["temple"]: meta.append(e(f["temple"]))
+        out.append('<li class="fest-row" data-until="%s">'
+                   '<span class="fest-when">%s</span>'
+                   '<span class="fest-what"><b>%s</b>%s%s</span></li>' % (
+            e(f["end"]), e(pretty_date(f["date"], f["end"])), e(f["fest"]),
+            ('<span class="fest-meta">%s</span>' % " \u00b7 ".join(meta)) if meta else "",
+            ('<span class="fest-note">%s</span>' % e(f["details"])) if f["details"] else ""))
+    return "".join(out)
+
+def temple_fest_html(t):
+    items = FEST_BY_TEMPLE.get((t["name"].lower(), t["area"].lower()), [])
+    if not items: return ""
+    return ('<div class="t-fest" data-festblock><p class="t-fest-h">Upcoming at this temple</p>'
+            '<ul class="fest-list">%s</ul></div>' % fest_rows_html(items))
 
 # ---------------------------------------------------------------- index
 def build_index():
@@ -332,6 +424,19 @@ def build_index():
                      '<a href="%s.html#t-%d">View in %s →</a></div>' %
                      (e(t["name"]), e(t["area"]), e(t["region"]), e(why),
                       cslug, t["id"], e(dict((c[1], c[0]) for c in CITIES)[cslug])))
+
+    if FEST:
+        fest_section = (
+          '<section class="section wrap" id="festivals" data-festblock>'
+          '<div class="section-head"><h2>Upcoming Hindu festival dates</h2>'
+          '<p class="section-sub">Dates for the year ahead. <b>UK temples do not all observe on the same day</b> '
+          '— panchang and regional reckonings differ — so check with your temple before travelling. '
+          'Confirmed temple dates appear on each temple’s listing as we receive them.</p></div>'
+          '<ul class="fest-list big">%s</ul>'
+          '<p class="fest-foot">Know your temple’s dates? <a href="%s">Send them in</a> and we’ll add them.</p>'
+          '</section>' % (fest_rows_html(FEST_NATIONAL), MAILTO))
+    else:
+        fest_section = ""
 
     page = head(
         "UK Hindu Temples — Interactive Map & Directory of %d Mandirs" % N,
@@ -409,6 +514,7 @@ def build_index():
   </div>
 </section>
 
+__FESTSECTION__
 <section class="section wrap" id="cities">
   <div class="section-head">
     <h2>Browse temples by city</h2>
@@ -431,7 +537,8 @@ def build_index():
   </div>
   <div class="faq">__FAQS__</div>
 </section>
-""", N=str(N), CITYCARDS=city_cards, FEATS="".join(feats), FAQS="".join(faq_html), MAILTO=MAILTO)
+""", N=str(N), CITYCARDS=city_cards, FEATS="".join(feats), FAQS="".join(faq_html),
+     MAILTO=MAILTO, FESTSECTION=fest_section)
     page += footer_html()
     page += """
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" defer></script>
