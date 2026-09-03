@@ -606,3 +606,14 @@ html,body{overflow-x:hidden;max-width:100%}
 .fs-tell{display:block;font-size:12px;font-weight:600;margin-top:9px;text-decoration:none}
 .fs-tell:hover{text-decoration:underline}
 @media (max-width:480px){.fest-strip{grid-template-columns:1fr 1fr}}
+
+/* ---------- walk-in list + camp line + figure images ---------- */
+.dgm-fig img{width:100%;height:auto;border:1px solid var(--line);border-radius:var(--r-m);background:var(--surface)}
+.walkin{counter-reset:w;list-style:none;margin:16px 0 0;padding:0;display:grid;gap:9px}
+.walkin li{position:relative;padding:11px 14px 11px 42px;background:var(--surface);
+  border:1px solid var(--line);border-radius:var(--r-m);font-size:14px;color:var(--ink-2);line-height:1.55}
+.walkin li b{color:var(--ink)}
+.walkin li::before{counter-increment:w;content:counter(w);position:absolute;left:13px;top:11px;
+  width:20px;height:20px;border-radius:50%;background:var(--vermilion);color:#fff;
+  font-family:var(--font-mono);font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center}
+.camp-line{margin:14px 0 0}
