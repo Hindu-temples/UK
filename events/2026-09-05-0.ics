@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//hindu-temples.uk//Cambridge events//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:2026-09-05-0@hindu-temples.uk
+DTSTAMP:20260903T000000Z
+DTSTART:20260905T100000
+DTEND:20260905T170000
+SUMMARY:Clay Ganesha Making Workshop
+LOCATION:Arbury Community Centre\, Campkin Rd\, Cambridge CB4 2LD
+DESCRIPTION:Make your own eco-friendly clay Ganesha. Hall cost covered by CHF\; materials shared between participants. Organised by Cambridge Hindu Forum Cost: Approx £5 materials
+URL:https://hindu-temples.uk/cambridge.html
+END:VEVENT
+END:VCALENDAR

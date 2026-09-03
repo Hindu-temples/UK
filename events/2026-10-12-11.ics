@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//hindu-temples.uk//Cambridge events//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:2026-10-12-11@hindu-temples.uk
+DTSTAMP:20260903T000000Z
+DTSTART:20261012T193000
+DTEND:20261012T213000
+SUMMARY:Mata Ki Chowki
+LOCATION:The Hub meeting room\, Cambourne\, High St\, Great Cambourne\, Cambridge CB23 6GW
+DESCRIPTION:An evening of devotion\, bhajans\, prayers and blessings. All warmly invited. Organised by Cambourne Hindu Association / Cambourne Vedic Heritage Cost: Free
+URL:https://hindu-temples.uk/cambridge.html
+END:VEVENT
+END:VCALENDAR

@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//hindu-temples.uk//Cambridge events//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:2026-10-17-12@hindu-temples.uk
+DTSTAMP:20260903T000000Z
+DTSTART:20261017T173000
+DTEND:20261017T223000
+SUMMARY:The Grand Garba Night Cambourne
+LOCATION:Cambourne — venue to be confirmed\, Cambourne\, Cambridge
+DESCRIPTION:Second night. Food stalls\, festivities and endless garba. Registration details to follow. Organised by CAM Community Cost: To be confirmed
+URL:https://hindu-temples.uk/cambridge.html
+END:VEVENT
+END:VCALENDAR

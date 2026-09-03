@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//hindu-temples.uk//Cambridge events//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:2026-09-12-3@hindu-temples.uk
+DTSTAMP:20260903T000000Z
+DTSTART:20260912T140000
+DTEND:20260912T183000
+SUMMARY:Sri Krishna Janmashtami
+LOCATION:Marleigh Community Hall\, Marleigh\, Cambridge CB5 8BX
+DESCRIPTION:Krishna Katha\, drama and kids' performances\, Abhishek\, Arati and feast prasadam. Free parking available. Organised by ISKCON Cambridgeshire Cost: Free — ticket required
+URL:https://hindu-temples.uk/cambridge.html
+END:VEVENT
+END:VCALENDAR

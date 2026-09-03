@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//hindu-temples.uk//Cambridge events//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:2026-09-05-1@hindu-temples.uk
+DTSTAMP:20260903T000000Z
+DTSTART:20260905T110000
+DTEND:20260905T180000
+SUMMARY:Onam Celebration
+LOCATION:The Hub\, Cambourne\, High St\, Great Cambourne\, Cambridge CB23 6GW
+DESCRIPTION:Cultural performances\, Onam games and a traditional Onasadhya meal. Organised by Cambourne Indian Club Cost: £18 adult · £13 child 5–10 · under 5 free
+URL:https://hindu-temples.uk/cambridge.html
+END:VEVENT
+END:VCALENDAR

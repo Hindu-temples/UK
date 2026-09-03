@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//hindu-temples.uk//Cambridge events//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:2026-09-20-7@hindu-temples.uk
+DTSTAMP:20260903T000000Z
+DTSTART:20260920T130000
+DTEND:20260920T210000
+SUMMARY:Cambridgeshire Ganeshotsav 2026
+LOCATION:Arbury Community Centre\, Campkin Rd\, Cambridge CB4 2LD
+DESCRIPTION:Dhol Tasha Lezim\, cultural performances\, Maharashtrian food stalls\, games and stalls. Maha-Prasad included with ticket. Free onsite parking. Organised by Maharashtra Mandal Cambridgeshire Cost: Tickets £5–£10 · under 6 free
+URL:https://hindu-temples.uk/cambridge.html
+END:VEVENT
+END:VCALENDAR

@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//hindu-temples.uk//Cambridge events//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:2026-09-19-5@hindu-temples.uk
+DTSTAMP:20260903T000000Z
+DTSTART:20260919T080000
+DTEND:20260919T153000
+SUMMARY:Shri Ganesh Chaturthi Maha Pooja
+LOCATION:Venue to be confirmed\, Cambridge
+DESCRIPTION:Full-day Maha Pooja. Registration and sponsorship via the form. Venue not stated on the poster — please check with the organiser. Organised by Cambridge Hindu Forum Cost: Minimum donation £12 adult · £6 child over 5
+URL:https://hindu-temples.uk/cambridge.html
+END:VEVENT
+END:VCALENDAR

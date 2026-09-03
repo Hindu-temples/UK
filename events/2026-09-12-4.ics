@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//hindu-temples.uk//Cambridge events//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:2026-09-12-4@hindu-temples.uk
+DTSTAMP:20260903T000000Z
+DTSTART:20260912T163000
+DTEND:20260912T173000
+SUMMARY:Garba Circle — learn garba
+LOCATION:Northstowe Secondary College\, Stirling Rd\, Northstowe\, Cambridge CB24 1DJ
+DESCRIPTION:Open to everyone. Learn the art of garba ahead of Navratri. Organised by Hindu Samaj Northstowe Cost: Free
+URL:https://hindu-temples.uk/cambridge.html
+END:VEVENT
+END:VCALENDAR

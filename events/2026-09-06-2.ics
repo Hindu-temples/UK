@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//hindu-temples.uk//Cambridge events//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:2026-09-06-2@hindu-temples.uk
+DTSTAMP:20260903T000000Z
+DTSTART:20260906T143000
+DTEND:20260906T183000
+SUMMARY:Krishna Janmashtami
+LOCATION:Arbury Community Centre\, Campkin Rd\, Cambridge CB4 2LD
+DESCRIPTION:Krishna bhajan\, Raas\, Dahi Handi and prasad. Come dressed as Kanha or Radha — best dressed kids awarded. Organised by Cambridge Hindu Association Cost: Members free · non-members £7
+URL:https://hindu-temples.uk/cambridge.html
+END:VEVENT
+END:VCALENDAR
