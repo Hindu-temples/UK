@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//hindu-temples.uk//Cambridge events//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:2026-10-11-10@hindu-temples.uk
+DTSTAMP:20260906T000000Z
+DTSTART:20261011T193000
+DTEND:20261019T210000
+SUMMARY:Navratri Northstowe
+LOCATION:Northstowe Secondary College\, Stirling Rd\, Northstowe\, Cambridge CB24 1DJ
+DESCRIPTION:Nine nights of devotion and garba. 11 Oct 4–6pm · 12–16 Oct 7:30–9pm · 17 Oct 6–8pm · 18 Oct 4–9pm including Kanya Pooja · 19 Oct 7:30–9pm. Everyone welcome. Organised by Hindu Samaj Northstowe Cost: Free
+URL:https://hindu-temples.uk/cambridge.html
+END:VEVENT
+END:VCALENDAR

@@ -617,3 +617,8 @@ html,body{overflow-x:hidden;max-width:100%}
   width:20px;height:20px;border-radius:50%;background:var(--vermilion);color:#fff;
   font-family:var(--font-mono);font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center}
 .camp-line{margin:14px 0 0}
+
+/* two posters on one event */
+.ev-posters{display:grid;grid-template-rows:1fr 1fr;gap:2px;height:100%}
+.ev-posters .ev-posterlink{min-height:0}
+@media (max-width:560px){.ev-posters{grid-template-rows:none;grid-template-columns:1fr 1fr}}
