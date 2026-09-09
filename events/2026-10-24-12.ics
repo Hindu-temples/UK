@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//hindu-temples.uk//Cambridge events//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:2026-10-24-12@hindu-temples.uk
+DTSTAMP:20260909T000000Z
+DTSTART:20261024T170000
+DTEND:20261024T170000
+SUMMARY:Sharad Utsav
+LOCATION:Milton Community Centre\, Coles Rd\, Milton\, Cambridge CB24 6BL
+DESCRIPTION:An evening of devotion\, music\, dance and community togetherness for Sharad Purnima\, with a live band — Paras Malde and Group. Organised by Hindu Samaj Northstowe Cost: Free
+URL:https://hindu-temples.uk/cambridge.html
+END:VEVENT
+END:VCALENDAR

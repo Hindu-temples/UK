@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//hindu-temples.uk//Cambridge events//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:2026-09-14-2@hindu-temples.uk
+DTSTAMP:20260909T000000Z
+DTSTART:20260914T053000
+DTEND:20260918T183000
+SUMMARY:Ganesh Chaturthi & Vinayaka Chaviti
+LOCATION:Northstowe\, 11 Temple Road\, Northstowe\, Cambridge CB24 1BP
+DESCRIPTION:Sthapana on 14 September at 5:30am. Daily puja 14–17 September at 6:30pm\, followed by prasadam dinner. Nimarjanam (visarjan) on 18 September from 3pm. Organised by Sanathana Ganesh Committee Cost: Free
+URL:https://hindu-temples.uk/cambridge.html
+END:VEVENT
+END:VCALENDAR
