@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//hindu-temples.uk//Cambridge events//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:2026-10-17-9@hindu-temples.uk
+DTSTAMP:20260916T000000Z
+DTSTART:20261017T090000
+DTEND:20261018T170000
+SUMMARY:Durga Puja
+LOCATION:Netherhall School\, Queen Edith's Way\, Cambridge CB1 8NN
+DESCRIPTION:The Indian Cultural Society's Durga Puja\, marking its 25th year in Cambridge. Supported by a Cambridge City Council community grant. Organised by Indian Cultural Society Cambridge
+URL:https://hindu-temples.uk/cambridge.html
+END:VEVENT
+END:VCALENDAR
