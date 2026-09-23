@@ -624,7 +624,7 @@ html,body{overflow-x:hidden;max-width:100%}
 @media (max-width:560px){.ev-posters{grid-template-rows:none;grid-template-columns:1fr 1fr}}
 
 /* ---------- season stats band ---------- */
-.season-band{margin:18px 0 0;padding:15px 17px;border-radius:var(--r-l);
+.season-band{margin:40px 0 0;padding:15px 17px;border-radius:var(--r-l);
   background:linear-gradient(135deg,#FFFBF1,var(--surface));border:1px solid var(--brass)}
 .sb-h{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
   color:var(--brass);margin:0 0 12px;font-weight:600}
