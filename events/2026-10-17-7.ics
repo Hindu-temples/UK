@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//hindu-temples.uk//Cambridge events//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:2026-10-17-7@hindu-temples.uk
+DTSTAMP:20260923T000000Z
+DTSTART:20261017T163000
+DTEND:20261017T203000
+SUMMARY:ICW Garbotsav 2026 — Navratri Dandiya
+LOCATION:The Studio\, Waterbeach Barracks\, Waterbeach\, Cambridge CB25 9PA
+DESCRIPTION:Live DJ with non-stop garba and dandiya\, a Swaranritya dance workshop\, kids' activities\, henna\, Indian street food\, and an introduction to the significance of Navratri. Organised by Indian Community Waterbeach Cost: Ticketed
+URL:https://hindu-temples.uk/cambridge.html
+END:VEVENT
+END:VCALENDAR

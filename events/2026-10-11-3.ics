@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//hindu-temples.uk//Cambridge events//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:2026-10-11-3@hindu-temples.uk
+DTSTAMP:20260923T000000Z
+DTSTART:20261011T090000
+DTEND:20261019T170000
+SUMMARY:Navratri Festival 2026
+LOCATION:The Netherhall School\, Queen Edith's Way\, Cambridge CB1 8NN
+DESCRIPTION:Nine days of Navratri. Times and hall details are confirmed on the organiser's website — please check before travelling. An event pass can be booked via the QR code on the poster. Organised by Cambridge Hindu Association Cost: Members free · students £5 for all 9 days · non-members £7
+URL:https://hindu-temples.uk/cambridge.html
+END:VEVENT
+END:VCALENDAR
