@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//hindu-temples.uk//Cambridge events//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:2026-10-25-9@hindu-temples.uk
+DTSTAMP:20260922T000000Z
+DTSTART:20261025T173000
+DTEND:20261025T213000
+SUMMARY:Sharad Poonam 2026
+LOCATION:The Netherhall School (Sports Hall)\, Queen Edith's Way\, Cambridge CB1 8NN
+DESCRIPTION:Sharad Poonam celebration. An event pass can be booked on the organiser's website. Organised by Cambridge Hindu Association Cost: Members free · students £5 · non-members £7
+URL:https://hindu-temples.uk/cambridge.html
+END:VEVENT
+END:VCALENDAR
