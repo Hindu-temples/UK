@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//hindu-temples.uk//Cambridge events//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:2026-11-14-3@hindu-temples.uk
+DTSTAMP:20261030T000000Z
+DTSTART:20261114T163000
+DTEND:20261114T170000
+SUMMARY:Diwali — Festival of Lights (Waterbeach)
+LOCATION:The Studio\, Waterbeach Barracks\, Denny End Rd\, Waterbeach\, Cambridge CB25 9PA
+DESCRIPTION:Dhol\, DJ\, cultural performances\, sparklers and food stalls. Organised by Indian Community Waterbeach Cost: Adults £7 · children (4–13) £5 · under 4 free · family ticket £22 (2 adults + 2 children) · early-bird discount until 9 Nov
+URL:https://hindu-temples.uk/cambridge.html
+END:VEVENT
+END:VCALENDAR

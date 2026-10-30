@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//hindu-temples.uk//Cambridge events//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:2026-11-01-1@hindu-temples.uk
+DTSTAMP:20261030T000000Z
+DTSTART:20261101T153000
+DTEND:20261101T180000
+SUMMARY:Orchard Park Diwali 2026
+LOCATION:Orchard Park Community Centre\, Orchard Park\, Cambridge
+DESCRIPTION:Music\, dance\, henna\, crafts and a Diwali message. Organised by Orchard Park Community Council Cost: Free entry
+URL:https://hindu-temples.uk/cambridge.html
+END:VEVENT
+END:VCALENDAR

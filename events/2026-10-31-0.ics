@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//hindu-temples.uk//Cambridge events//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:2026-10-31-0@hindu-temples.uk
+DTSTAMP:20261030T000000Z
+DTSTART:20261031T110000
+DTEND:20261031T230000
+SUMMARY:Cambourne Diwali — Festival of Lights
+LOCATION:The Hub Community Centre\, Cambourne\, High St\, Great Cambourne\, Cambridge CB23 6GW
+DESCRIPTION:Diwali Bazaar\, children’s ethnic workshops\, puja and prayers\, presentations\, Bollywood quiz\, community and professional performances\, and fireworks. Organised by CamCare UK Cost: Free entry
+URL:https://hindu-temples.uk/cambridge.html
+END:VEVENT
+END:VCALENDAR
